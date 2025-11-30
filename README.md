@@ -6,8 +6,8 @@
 **Date:** November 29, 2025<br>
 **SPDX-License-Identifier:** BSD-3-Clause<br>
 **License File:** See the LICENSE file in the project root<br>
-**Copyright:** © 2025 Michael Gardner, A Bit of Help, Inc.<br>  
-**Status:** Released   
+**Copyright:** © 2025 Michael Gardner, A Bit of Help, Inc.<br>
+**Status:** Released
 
 > A canonical Ada 2022 library demonstrating hexagonal architecture with functional error handling, SPARK-compatible design, and embedded-safe patterns.
 
