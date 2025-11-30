@@ -1,0 +1,149 @@
+-- ===========================================================================
+-- TZif.gpr - TZif Timezone Library (RFC 9636)
+-- ===========================================================================
+-- Copyright (c) 2025 Michael Gardner, A Bit of Help, Inc.
+-- SPDX-License-Identifier: BSD-3-Clause
+-- See LICENSE file in the project root.
+--
+-- Purpose:
+--   Parsing and querying of IANA's compiled timezone information (TZif).
+--   This is a library-only crate (no executables) containing domain,
+--   application, infrastructure, and API layers.
+--
+-- Produces: lib/libtzif.a
+-- Publishable: YES - The library crate
+-- ===========================================================================
+
+with "shared_config.gpr";
+with "functional.gpr";
+with "config/tzif_config.gpr";
+
+library project Tzif is
+
+   for Library_Name use "tzif";
+   for Library_Version use
+     Project'Library_Name & ".so." & Tzif_Config.Crate_Version;
+
+   --  =======================================================================
+   --  Profile Selection (via Tzif_Config package)
+   --  =======================================================================
+   --
+   --  Usage:
+   --    alr build                                      # standard (default)
+   --    alr build -- -XTZIF_PROFILE=embedded # embedded profile
+   --    alr build -- -XTZIF_PROFILE=baremetal
+   --
+   --  Profiles:
+   --    standard        - Desktop/server (1+ GB RAM)
+   --    embedded        - Ravenscar embedded (512KB+ RAM)
+   --    concurrent      - Multi-threaded (1+ GB RAM)
+   --    baremetal       - Zero footprint (128KB+ RAM)
+   --    stm32h7s78      - STM32H7S78-DK (620KB + 32MB PSRAM)
+   --    stm32mp135_linux - STM32MP135F-DK Linux (512 MB)
+   --  =======================================================================
+   type Profile_Type is
+     ("standard",           -- Desktop/server (1+ GB RAM)
+      "embedded",           -- Ravenscar embedded (512KB+ RAM)
+      "concurrent",         -- Multi-threaded (1+ GB RAM)
+      "baremetal",          -- Zero footprint (128KB+ RAM)
+      "stm32h7s78",         -- STM32H7S78-DK (620KB + 32MB PSRAM)
+      "stm32mp135_linux");  -- STM32MP135F-DK Linux (512 MB)
+
+   Profile : Profile_Type := external ("TZIF_PROFILE", "standard");
+
+   --  =======================================================================
+   --  Source Directories (Profile-Dependent)
+   --  =======================================================================
+   --  Include all source subdirectories + selected configuration profile.
+   --  Only ONE Tzif_Config package will be visible to the compiler.
+   --  =======================================================================
+   case Profile is
+      when "standard" =>
+         for Source_Dirs use ("src/**", "config/profiles/standard");
+      when "embedded" =>
+         for Source_Dirs use ("src/**", "config/profiles/embedded");
+      when "concurrent" =>
+         for Source_Dirs use ("src/**", "config/profiles/concurrent");
+      when "baremetal" =>
+         for Source_Dirs use ("src/**", "config/profiles/baremetal");
+      when "stm32h7s78" =>
+         for Source_Dirs use ("src/**", "config/profiles/stm32h7s78");
+      when "stm32mp135_linux" =>
+         for Source_Dirs use ("src/**", "config/profiles/stm32mp135_linux");
+   end case;
+
+   for Object_Dir use "obj/" & Tzif_Config.Build_Profile;
+   for Create_Missing_Dirs use "True";
+   for Library_Dir use "lib";
+
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("TZIF_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   --  =======================================================================
+   --  Stand-Alone Library Configuration - PUBLIC API ENFORCEMENT
+   --  =======================================================================
+   --
+   --  Hybrid Library Architecture: Only Domain and API are public
+   --
+   --  PUBLIC (Publishable, Reusable):
+   --    - Tzif            Root package
+   --    - Tzif.API        Stable public facade
+   --    - Domain.*                  Pure domain logic, value objects
+   --
+   --  PRIVATE (Application-specific, Hidden):
+   --    - Application.*             Application-specific use cases
+   --    - Infrastructure.*          Concrete adapters
+   --
+   --  ENFORCED BY:
+   --    - Library_Standalone: Enables stand-alone library mode
+   --    - Library_Interface: Explicitly lists ONLY public packages
+   --    - GPRbuild: Prevents clients from accessing non-listed packages
+   --  =======================================================================
+
+   for Library_Standalone use "standard";
+
+   --  Public Interface: Domain layer + API facade
+   --  Application and Infrastructure are deliberately EXCLUDED
+   --  TZif_Config is included as it's needed by Domain packages
+   for Library_Interface use
+     ("TZif_Config",
+      "TZif",
+      "TZif.API",
+      "TZif.Domain",
+      "TZif.Domain.Entity",
+      "TZif.Domain.Entity.Zone",
+      "TZif.Domain.Error",
+      "TZif.Domain.Error.Result",
+      "TZif.Domain.Service",
+      "TZif.Domain.Service.Timezone_Lookup",
+      "TZif.Domain.TZif_Data",
+      "TZif.Domain.Value_Object",
+      "TZif.Domain.Value_Object.Cache_Stats",
+      "TZif.Domain.Value_Object.Epoch_Seconds",
+      "TZif.Domain.Value_Object.IANA_Releases",
+      "TZif.Domain.Value_Object.Source_Info",
+      "TZif.Domain.Value_Object.Timezone_Type",
+      "TZif.Domain.Value_Object.Transition",
+      "TZif.Domain.Value_Object.Transition_Info",
+      "TZif.Domain.Value_Object.TZif_Header",
+      "TZif.Domain.Value_Object.Unit",
+      "TZif.Domain.Value_Object.UTC_Offset",
+      "TZif.Domain.Value_Object.Zone_Id");
+
+   -- ==========================================================================
+   -- Package References: Inherit from Shared_Config
+   -- ==========================================================================
+
+   package Compiler renames Shared_Config.Compiler;
+   package Binder renames Shared_Config.Binder;
+   package Builder renames Shared_Config.Builder;
+   package Format renames Shared_Config.Format;
+   package Documentation renames Shared_Config.Documentation;
+
+   package Install is
+      for Artifacts (".") use ("share");
+   end Install;
+
+end Tzif;

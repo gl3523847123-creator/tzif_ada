@@ -1,0 +1,32 @@
+-- ===========================================================================
+-- integration_tests.gpr - Integration Test Suite
+-- ===========================================================================
+-- Note: Uses tzif_internal.gpr (not tzif.gpr) to access internal packages
+--       that are tested by integration tests but not exposed in the public API.
+-- ===========================================================================
+
+with "../../config/tzif_config.gpr";
+with "../../tzif_internal.gpr";
+
+project Integration_Tests is
+
+   for Source_Dirs use (".", "../common", "../support");
+   for Object_Dir use "../../obj/test/integration";
+   for Exec_Dir use "../bin";
+
+   --  Only the runner is Main; individual tests are procedures it calls
+   for Main use ("integration_runner.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use TZif_Config.Ada_Compiler_Switches;
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es");  -- Symbolic traceback
+   end Binder;
+
+   package Builder is
+      for Switches ("Ada") use ("-g");  -- Debug symbols
+   end Builder;
+
+end Integration_Tests;
