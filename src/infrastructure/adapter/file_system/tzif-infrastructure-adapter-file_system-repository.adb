@@ -114,7 +114,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       if File_Path'Length = 0 then
          return
            Find_By_Id_Result.Error
-             (Infrastructure_Error, "Zone not found: " & Zone_Id_Str);
+             (Not_Found_Error, "Zone not found: " & Zone_Id_Str);
       end if;
 
       declare
@@ -153,7 +153,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       when E : others =>
          return
            Find_By_Id_Result.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Unexpected error: " & Ada.Exceptions.Exception_Message (E));
    end Find_By_Id;
 
@@ -170,7 +170,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       when E : others =>
          return
            Boolean_Result.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Error checking existence: " &
               Ada.Exceptions.Exception_Message (E));
    end Exists_By_Id;
@@ -197,7 +197,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       if File_Path'Length = 0 then
          return
            Get_Transition_Result_Package.Error
-             (Infrastructure_Error, "Zone not found: " & Zone_Id_Str);
+             (Not_Found_Error, "Zone not found: " & Zone_Id_Str);
       end if;
 
       declare
@@ -242,7 +242,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       when E : others =>
          return
            Get_Transition_Result_Package.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Unexpected error: " & Ada.Exceptions.Exception_Message (E));
    end Get_Transition_At_Epoch;
 
@@ -265,7 +265,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       then
          return
            Version_Result_Package.Error
-             (Infrastructure_Error, "Version file not found: " & Version_File);
+             (Not_Found_Error, "Version file not found: " & Version_File);
       end if;
 
       declare
@@ -288,7 +288,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
             end if;
             return
               Version_Result_Package.Error
-                (Infrastructure_Error,
+                (IO_Error,
                  "Error reading version: " &
                  Ada.Exceptions.Exception_Message (E));
       end;
@@ -296,7 +296,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       when E : others =>
          return
            Version_Result_Package.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Unexpected error: " & Ada.Exceptions.Exception_Message (E));
    end Get_Version;
 
@@ -312,7 +312,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       if not Exists (Localtime_Path) then
          return
            Result_Zone_Id.Error
-             (Infrastructure_Error, "/etc/localtime not found");
+             (Not_Found_Error, "/etc/localtime not found");
       end if;
 
       --  Try to resolve symlink using readlink
@@ -325,7 +325,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
          if not Infrastructure.Platform.String_Result.Is_Ok (Link_Result) then
             return
               Result_Zone_Id.Error
-                (Infrastructure_Error, "/etc/localtime is not a symlink");
+                (IO_Error, "/etc/localtime is not a symlink");
          end if;
 
          declare
@@ -350,7 +350,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
             if Marker_Pos = 0 then
                return
                  Result_Zone_Id.Error
-                   (Infrastructure_Error,
+                   (IO_Error,
                     "Cannot extract zone ID from: " & Link_Target);
             end if;
 
@@ -369,7 +369,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       when E : others =>
          return
            Result_Zone_Id.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Error detecting timezone: " &
               Ada.Exceptions.Exception_Message (E));
    end Find_My_Id;
@@ -424,11 +424,15 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
                                  Zones.Append (Make_Zone_Id (Zone_Name));
                               exception
                                  when Constraint_Error =>
-                                    null;  -- Skip zones with invalid names
+                                    --  DELIBERATE: Skip invalid zone names
+                                    --  Malformed entries silently skipped
+                                    null;
                               end;
                            end if;
 
                         when others =>
+                           --  DELIBERATE: Skip non-directory/non-file entries
+                           --  Only regular files and directories are relevant
                            null;
                      end case;
                   end;
@@ -439,7 +443,10 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
          End_Search (Search);
       exception
          when Ada.Directories.Name_Error | Ada.Directories.Use_Error =>
-            null;  -- Directory not accessible
+            --  DELIBERATE: Skip inaccessible directories silently
+            --  Some system directories may be permission-protected;
+            --  continuing scan of other accessible directories
+            null;
       end Scan_Directory;
 
       function Less_Than (Left, Right : Zone_Id_Type) return Boolean is
@@ -454,7 +461,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       if not Exists (Path_Str) or else Kind (Path_Str) /= Directory then
          return
            List_All_Zones_Result_Package.Error
-             (Infrastructure_Error, "Source path not found: " & Path_Str);
+             (Not_Found_Error, "Source path not found: " & Path_Str);
       end if;
 
       Scan_Directory (Path_Str);
@@ -472,7 +479,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       when E : others =>
          return
            List_All_Zones_Result_Package.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Error listing zones: " & Ada.Exceptions.Exception_Message (E));
    end List_All_Zones;
 
@@ -536,6 +543,8 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
                            end;
 
                         when others =>
+                           --  DELIBERATE: Skip non-directory/non-file entries
+                           --  Only regular files and directories are relevant
                            null;
                      end case;
                   end;
@@ -546,6 +555,9 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
          End_Search (Search);
       exception
          when Ada.Directories.Name_Error | Ada.Directories.Use_Error =>
+            --  DELIBERATE: Skip inaccessible directories silently
+            --  Some system directories may be permission-protected;
+            --  continuing scan of other accessible directories
             null;
       end Scan_Directory;
 
@@ -563,7 +575,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       when E : others =>
          return
            Find_By_Pattern_Result_Package.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Error searching pattern: " &
               Ada.Exceptions.Exception_Message (E));
    end Find_By_Pattern;
@@ -624,6 +636,8 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
                            end if;
 
                         when others =>
+                           --  DELIBERATE: Skip non-directory/non-file entries
+                           --  Only regular files and directories are relevant
                            null;
                      end case;
                   end;
@@ -634,6 +648,9 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
          End_Search (Search);
       exception
          when Ada.Directories.Name_Error | Ada.Directories.Use_Error =>
+            --  DELIBERATE: Skip inaccessible directories silently
+            --  Some system directories may be permission-protected;
+            --  continuing scan of other accessible directories
             null;
       end Scan_Directory;
 
@@ -650,7 +667,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       when E : others =>
          return
            Find_By_Region_Result_Package.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Error searching region: " &
               Ada.Exceptions.Exception_Message (E));
    end Find_By_Region;
@@ -708,6 +725,8 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
                            end if;
 
                         when others =>
+                           --  DELIBERATE: Skip non-directory/non-file entries
+                           --  Only regular files and directories are relevant
                            null;
                      end case;
                   end;
@@ -718,6 +737,9 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
          End_Search (Search);
       exception
          when Ada.Directories.Name_Error | Ada.Directories.Use_Error =>
+            --  DELIBERATE: Skip inaccessible directories silently
+            --  Some system directories may be permission-protected;
+            --  continuing scan of other accessible directories
             null;
       end Scan_Directory;
 
@@ -744,7 +766,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       when E : others       =>
          return
            Find_By_Regex_Result_Package.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Error searching regex: " &
               Ada.Exceptions.Exception_Message (E));
    end Find_By_Regex;
@@ -817,7 +839,10 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
             End_Search (Search);
          exception
             when Ada.Directories.Name_Error | Ada.Directories.Use_Error =>
-               null;  -- Skip inaccessible directories
+               --  DELIBERATE: Skip inaccessible directories silently
+               --  Some system directories may be permission-protected;
+               --  continuing count of accessible directories
+               null;
          end Count_Recursive;
 
       begin
@@ -837,7 +862,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
             Error_Vectors.Append
               (Data.Errors,
                Error_Type'
-                 (Kind    => Infrastructure_Error,
+                 (Kind    => IO_Error,
                   Message =>
                     Error_Strings.To_Bounded_String
                       ("Path not found: " & Path)));
@@ -900,7 +925,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
             Error_Vectors.Append
               (Data.Errors,
                Error_Type'
-                 (Kind    => Infrastructure_Error,
+                 (Kind    => IO_Error,
                   Message =>
                     Error_Strings.To_Bounded_String
                       ("Error scanning " & Path & ": " &
@@ -932,7 +957,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
          --  All paths failed
          return
            Discovery_Result_Package.Error
-             (Kind    => Infrastructure_Error,
+             (Kind    => IO_Error,
               Message =>
                 "No sources found. Errors:" &
                 Error_Vectors.Length (Data.Errors)'Image);
@@ -959,7 +984,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       if not Exists (Path_Str) then
          return
            Load_Source_Result_Package.Error
-             (Infrastructure_Error, "Path not found: " & Path_Str);
+             (Not_Found_Error, "Path not found: " & Path_Str);
       end if;
 
       if Kind (Path_Str) /= Directory then
@@ -1026,6 +1051,8 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
                                  end if;
 
                               when others =>
+                                 --  DELIBERATE: Skip non-directory/non-file
+                                 --  Only regular files and dirs are relevant
                                  null;
                            end case;
                         end if;
@@ -1035,6 +1062,8 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
                exception
                   when Ada.Directories.Name_Error
                     | Ada.Directories.Use_Error =>
+                     --  DELIBERATE: Skip inaccessible directories silently
+                     --  Permission-protected dirs don't affect count
                      null;
                end Count_Recursive;
 
@@ -1055,7 +1084,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
             end if;
             return
               Load_Source_Result_Package.Error
-                (Infrastructure_Error,
+                (IO_Error,
                  "Error loading source: " &
                  Ada.Exceptions.Exception_Message (E));
       end;
@@ -1064,7 +1093,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       when E : others =>
          return
            Load_Source_Result_Package.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Unexpected error: " & Ada.Exceptions.Exception_Message (E));
    end Load_Source;
 
@@ -1115,7 +1144,7 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       when E : others =>
          return
            Validation_Result_Package.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Error validating source: " &
               Ada.Exceptions.Exception_Message (E));
    end Validate_Source;

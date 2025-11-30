@@ -12,12 +12,16 @@ pragma Ada_2022;
 --    TZif.Domain.TZif_Data
 --    TZif.Domain.Value_Object.Epoch_Seconds
 --    TZif.Domain.Value_Object.UTC_Offset
+--    TZif.Domain.Value_Object.Timezone_Type
+--    Functional.Option
 --
 --  ===========================================================================
 
 with TZif.Domain.TZif_Data;
 with TZif.Domain.Value_Object.Epoch_Seconds;
 with TZif.Domain.Value_Object.UTC_Offset;
+with TZif.Domain.Value_Object.Timezone_Type;
+with Functional.Option;
 
 package TZif.Domain.Service.Timezone_Lookup with
   Preelaborate
@@ -26,6 +30,23 @@ is
    use TZif.Domain.TZif_Data;
    use TZif.Domain.Value_Object.Epoch_Seconds;
    use TZif.Domain.Value_Object.UTC_Offset;
+   use TZif.Domain.Value_Object.Timezone_Type;
+
+   --  ========================================================================
+   --  Option Types for Lookup Results
+   --  ========================================================================
+   --  These Option types allow callers to explicitly handle cases where
+   --  timezone data is unavailable (no types defined, invalid type index).
+   --  ========================================================================
+
+   package UTC_Offset_Options is new Functional.Option (UTC_Offset_Type);
+   subtype UTC_Offset_Option is UTC_Offset_Options.Option;
+
+   package Boolean_Options is new Functional.Option (Boolean);
+   subtype Boolean_Option is Boolean_Options.Option;
+
+   package Abbreviation_Options is new Functional.Option (Abbreviation_Type);
+   subtype Abbreviation_Option is Abbreviation_Options.Option;
 
    --  ========================================================================
    --  Find_UTC_Offset_At_Time
@@ -37,7 +58,8 @@ is
    --    Time : Epoch timestamp to query
    --
    --  Returns:
-   --    UTC offset in seconds (negative for west of UTC, positive for east)
+   --    Some(offset) - UTC offset in seconds (negative west, positive east)
+   --    None         - No timezone types available in data
    --
    --  Algorithm:
    --    1. Binary search transitions to find last transition <= Time
@@ -47,7 +69,8 @@ is
    --  ========================================================================
 
    function Find_UTC_Offset_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return UTC_Offset_Type;
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type)
+      return UTC_Offset_Option;
 
    --  ========================================================================
    --  Is_DST_At_Time
@@ -59,11 +82,13 @@ is
    --    Time : Epoch timestamp to query
    --
    --  Returns:
-   --    True if DST is in effect, False otherwise
+   --    Some(True)  - DST is in effect
+   --    Some(False) - Standard time is in effect
+   --    None        - No timezone types available in data
    --  ========================================================================
 
    function Is_DST_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return Boolean;
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return Boolean_Option;
 
    --  ========================================================================
    --  Get_Abbreviation_At_Time
@@ -75,10 +100,12 @@ is
    --    Time : Epoch timestamp to query
    --
    --  Returns:
-   --    Timezone abbreviation string (e.g., "PST", "EDT", "UTC")
+   --    Some(abbreviation) - Timezone abbreviation (e.g., "PST", "EDT", "UTC")
+   --    None               - No timezone types available in data
    --  ========================================================================
 
    function Get_Abbreviation_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return String;
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type)
+      return Abbreviation_Option;
 
 end TZif.Domain.Service.Timezone_Lookup;

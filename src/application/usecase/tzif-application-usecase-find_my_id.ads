@@ -39,7 +39,8 @@ is
       --
       --  Returns:
       --    Ok(Zone_Id_String) - Local timezone (e.g., "America/Phoenix")
-      --    Err(Infrastructure_Error) - Cannot determine timezone
+      --    Err(Not_Found_Error) - Timezone link not found
+      --    Err(IO_Error) - Cannot read timezone configuration
       --
       --  Implementation:
       --    Static dispatch to injected repository function

@@ -76,8 +76,8 @@ procedure Test_Query_Timezone_Info is
             Err : constant Error_Type := Info_Result.Error_Info (Result);
          begin
             Assert
-              (Err.Kind = Infrastructure_Error,
-               "Error should be Infrastructure_Error");
+              (Err.Kind = Not_Found_Error,
+               "Error should be Not_Found_Error");
          end;
       end if;
    end Test_Query_Nonexistent_File;
@@ -97,10 +97,10 @@ procedure Test_Query_Timezone_Info is
          declare
             Err : constant Error_Type := Info_Result.Error_Info (Result);
          begin
-            --  Could be Infrastructure_Error or Validation_Error
+            --  Could be IO_Error, Parse_Error, or Not_Found_Error
             Assert
-              (Err.Kind in Infrastructure_Error | Validation_Error,
-               "Error should be Infrastructure or Validation error");
+              (Err.Kind in IO_Error | Parse_Error | Not_Found_Error,
+               "Error should be IO, Parse, or Not_Found error");
          end;
       end if;
    end Test_Query_Invalid_File;

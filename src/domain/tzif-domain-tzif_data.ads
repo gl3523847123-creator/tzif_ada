@@ -31,6 +31,7 @@ with TZif.Domain.Value_Object.Transition;
 with TZif.Domain.Value_Object.Timezone_Type;
 with TZif.Domain.Value_Object.Epoch_Seconds;
 with TZif.Domain.Value_Object.UTC_Offset;
+with Functional.Option;
 
 package TZif.Domain.TZif_Data with
   Preelaborate
@@ -39,10 +40,10 @@ is
    use TZif.Domain.Value_Object;
    use TZif.Domain.Value_Object.Epoch_Seconds;
    use TZif.Domain.Value_Object.UTC_Offset;
+   use TZif.Domain.Value_Object.Timezone_Type;
 
    --  Make comparison operators visible for vector instantiation
    use type Transition.Transition_Type;
-   use type Timezone_Type.Timezone_Type_Record;
 
    --  ========================================================================
    --  Bounded Containers for TZif Data
@@ -139,6 +140,22 @@ is
      (POSIX_TZ_Strings.To_String (Data.POSIX_TZ));
 
    --  ========================================================================
+   --  Option Types for Lookup Results
+   --  ========================================================================
+   --  These Option types allow callers to explicitly handle cases where
+   --  timezone data is unavailable (no types defined, invalid type index).
+   --  ========================================================================
+
+   package UTC_Offset_Options is new Functional.Option (UTC_Offset_Type);
+   subtype UTC_Offset_Option is UTC_Offset_Options.Option;
+
+   package Boolean_Options is new Functional.Option (Boolean);
+   subtype Boolean_Option is Boolean_Options.Option;
+
+   package Abbreviation_Options is new Functional.Option (Abbreviation_Type);
+   subtype Abbreviation_Option is Abbreviation_Options.Option;
+
+   --  ========================================================================
    --  Lookup Functions
    --  ========================================================================
 
@@ -155,15 +172,20 @@ is
      Pre => Natural (Data.Timezone_Types.Length) > Type_Index;
 
    --  Find the UTC offset in effect at a given epoch time
+   --  Returns Some(offset) or None if no timezone types available
    function Find_Offset_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return UTC_Offset_Type;
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type)
+      return UTC_Offset_Option;
 
    --  Check if DST is in effect at a given epoch time
+   --  Returns Some(is_dst) or None if no timezone types available
    function Is_DST_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return Boolean;
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return Boolean_Option;
 
    --  Get timezone abbreviation in effect at a given epoch time
+   --  Returns Some(abbreviation) or None if no timezone types available
    function Get_Abbreviation_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return String;
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type)
+      return Abbreviation_Option;
 
 end TZif.Domain.TZif_Data;

@@ -55,21 +55,21 @@ is
          when E : Name_Error =>
             Result :=
               Read_File_Result.Error
-                (TZif.Domain.Error.Infrastructure_Error,
+                (TZif.Domain.Error.Not_Found_Error,
                  "Zone file not found: " & File_Path & ": " &
                  Exception_Message (E));
             return;
          when E : Use_Error  =>
             Result :=
               Read_File_Result.Error
-                (TZif.Domain.Error.Infrastructure_Error,
+                (TZif.Domain.Error.IO_Error,
                  "Cannot access zone file: " & File_Path & ": " &
                  Exception_Message (E));
             return;
          when E : others     =>
             Result :=
               Read_File_Result.Error
-                (TZif.Domain.Error.Infrastructure_Error,
+                (TZif.Domain.Error.IO_Error,
                  "File open error for " & File_Path & ": " &
                  Exception_Message (E));
             return;
@@ -97,7 +97,7 @@ is
             end if;
             Result :=
               Read_File_Result.Error
-                (TZif.Domain.Error.Infrastructure_Error,
+                (TZif.Domain.Error.Parse_Error,
                  "Unexpected end of file for " & File_Path & ": " &
                  Exception_Message (E));
          when E : Data_Error =>
@@ -106,7 +106,7 @@ is
             end if;
             Result :=
               Read_File_Result.Error
-                (TZif.Domain.Error.Infrastructure_Error,
+                (TZif.Domain.Error.Parse_Error,
                  "File data corrupted for " & File_Path & ": " &
                  Exception_Message (E));
          when E : others     =>
@@ -115,7 +115,7 @@ is
             end if;
             Result :=
               Read_File_Result.Error
-                (TZif.Domain.Error.Infrastructure_Error,
+                (TZif.Domain.Error.IO_Error,
                  "File read error for " & File_Path & ": " &
                  Exception_Message (E));
       end;

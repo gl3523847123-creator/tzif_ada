@@ -19,8 +19,10 @@ procedure Test_TZif_Data is
    use TZif.Domain.Value_Object.UTC_Offset;
    use TZif.Domain.Value_Object.Timezone_Type;
    use TZif.Domain.Value_Object.Transition;
+
    Test_Count : Natural := 0;
    Pass_Count : Natural := 0;
+
    procedure Assert (Condition : Boolean; Test_Name : String) is
    begin
       Test_Count := Test_Count + 1;
@@ -31,6 +33,35 @@ procedure Test_TZif_Data is
          Put_Line ("  [FAIL] " & Test_Name);
       end if;
    end Assert;
+
+   --  Helper: Check if offset Option equals expected value
+   function Offset_Equals
+     (Opt : UTC_Offset_Option; Expected : UTC_Offset_Type) return Boolean
+   is
+   begin
+      return UTC_Offset_Options.Is_Some (Opt)
+        and then UTC_Offset_Options.Value (Opt) = Expected;
+   end Offset_Equals;
+
+   --  Helper: Check if DST Option equals expected value
+   function DST_Equals
+     (Opt : Boolean_Option; Expected : Boolean) return Boolean
+   is
+   begin
+      return Boolean_Options.Is_Some (Opt)
+        and then Boolean_Options.Value (Opt) = Expected;
+   end DST_Equals;
+
+   --  Helper: Check if abbreviation Option equals expected string
+   function Abbrev_Equals
+     (Opt : Abbreviation_Option; Expected : String) return Boolean
+   is
+   begin
+      return Abbreviation_Options.Is_Some (Opt)
+        and then Abbreviation_Strings.To_String
+            (Abbreviation_Options.Value (Opt)) = Expected;
+   end Abbrev_Equals;
+
    --  =====================================================================
    --  Test: No Transitions
    --  =====================================================================
@@ -51,6 +82,7 @@ procedure Test_TZif_Data is
         (Type_Index = 0,
          "No transitions: should return first type for any time");
    end Test_Find_Type_No_Transitions;
+
    --  =====================================================================
    --  Test: Before First Transition
    --  =====================================================================
@@ -73,6 +105,7 @@ procedure Test_TZif_Data is
       Assert
         (Type_Index = 0, "Before first transition: should use first type");
    end Test_Find_Type_Before_First;
+
    --  =====================================================================
    --  Test: After Last Transition
    --  =====================================================================
@@ -96,6 +129,7 @@ procedure Test_TZif_Data is
         (Type_Index = 0,
          "After last transition: should use last transition's type");
    end Test_Find_Type_After_Last;
+
    --  =====================================================================
    --  Test: Between Transitions
    --  =====================================================================
@@ -117,6 +151,7 @@ procedure Test_TZif_Data is
       Type_Index := Find_Type_At_Time (Data, 150);
       Assert (Type_Index = 1, "Between: should use correct type");
    end Test_Find_Type_Between;
+
    --  =====================================================================
    --  Test: Find Offset At Time
    --  =====================================================================
@@ -124,7 +159,6 @@ procedure Test_TZif_Data is
       Data         : TZif_Data_Type;
       Type1, Type2 : Timezone_Type_Record;
       Trans        : Transition_Type;
-      Offset       : UTC_Offset_Type;
    begin
       Put_Line ("Test: Find offset at specific time");
       Type1 := Make_Timezone_Type (-18000, False, "EST");
@@ -133,9 +167,11 @@ procedure Test_TZif_Data is
       Data.Timezone_Types.Append (Type2);
       Trans := (Time => 100, Type_Index => 1);
       Data.Transitions.Append (Trans);
-      Offset := Find_Offset_At_Time (Data, 150);
-      Assert (Offset = -14400, "Should return correct offset");
+      Assert
+        (Offset_Equals (Find_Offset_At_Time (Data, 150), -14400),
+         "Should return correct offset");
    end Test_Find_Offset_At_Time;
+
    --  =====================================================================
    --  Test: DST Status At Time
    --  =====================================================================
@@ -151,11 +187,15 @@ procedure Test_TZif_Data is
       Data.Timezone_Types.Append (Type2);
       Trans := (Time => 100, Type_Index => 1);
       Data.Transitions.Append (Trans);
+      --  Before first transition: uses first transition's type (EDT/DST)
       Assert
-        (not Is_DST_At_Time (Data, 50),
-         "Before transition: should not be DST (uses first type)");
-      Assert (Is_DST_At_Time (Data, 150), "After transition: should be DST");
+        (DST_Equals (Is_DST_At_Time (Data, 50), True),
+         "Before transition: should be DST (uses first transition's type)");
+      Assert
+        (DST_Equals (Is_DST_At_Time (Data, 150), True),
+         "After transition: should be DST");
    end Test_Is_DST_At_Time;
+
    --  =====================================================================
    --  Test: Has_Transitions Query
    --  =====================================================================
@@ -171,6 +211,7 @@ procedure Test_TZif_Data is
       Assert
         (Has_Transitions (Data), "Data with transition should report true");
    end Test_Has_Transitions;
+
    --  =====================================================================
    --  Test: Leap Seconds Queries
    --  =====================================================================
@@ -193,6 +234,7 @@ procedure Test_TZif_Data is
         (Leap_Second_Count (Data) = 1,
          "Should report correct leap second count");
    end Test_Leap_Second_Queries;
+
    --  =====================================================================
    --  Test: POSIX TZ String Queries
    --  =====================================================================
@@ -208,6 +250,7 @@ procedure Test_TZif_Data is
         (Get_POSIX_TZ (Data) = "EST5EDT",
          "Should return correct POSIX TZ string");
    end Test_POSIX_TZ_Queries;
+
    --  =====================================================================
    --  Test: Abbreviation At Time
    --  =====================================================================
@@ -215,7 +258,6 @@ procedure Test_TZif_Data is
       Data         : TZif_Data_Type;
       Type1, Type2 : Timezone_Type_Record;
       Trans        : Transition_Type;
-      Abbrev       : String (1 .. 3);
    begin
       Put_Line ("Test: Get abbreviation at specific time");
       Type1 := Make_Timezone_Type (-18000, False, "EST");
@@ -224,11 +266,15 @@ procedure Test_TZif_Data is
       Data.Timezone_Types.Append (Type2);
       Trans := (Time => 100, Type_Index => 1);
       Data.Transitions.Append (Trans);
-      Abbrev := Get_Abbreviation_At_Time (Data, 50);
-      Assert (Abbrev = "EST", "Before transition: should return EST");
-      Abbrev := Get_Abbreviation_At_Time (Data, 150);
-      Assert (Abbrev = "EDT", "After transition: should return EDT");
+      --  Before first transition: uses first transition's type (EDT)
+      Assert
+        (Abbrev_Equals (Get_Abbreviation_At_Time (Data, 50), "EDT"),
+         "Before transition: should return EDT (first transition's type)");
+      Assert
+        (Abbrev_Equals (Get_Abbreviation_At_Time (Data, 150), "EDT"),
+         "After transition: should return EDT");
    end Test_Get_Abbreviation_At_Time;
+
 begin
    --  Run all tests
    Test_Find_Type_No_Transitions;

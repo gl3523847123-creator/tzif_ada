@@ -105,7 +105,7 @@ is
          if Bytes (I) /= TZif_Magic (I) then
             Result :=
               Parse_Result.Error
-                (TZif.Domain.Error.Validation_Error, "Invalid TZif magic");
+                (TZif.Domain.Error.Parse_Error, "Invalid TZif magic");
             return;
          end if;
       end loop;
@@ -142,7 +142,7 @@ is
             --  Unknown version
             Result :=
               Parse_Result.Error
-                (TZif.Domain.Error.Validation_Error, "Unknown TZif version");
+                (TZif.Domain.Error.Parse_Error, "Unknown TZif version");
       end case;
 
    end Parse_From_Bytes;

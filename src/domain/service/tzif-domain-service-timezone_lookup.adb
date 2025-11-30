@@ -10,11 +10,7 @@ pragma Ada_2022;
 --
 --  ===========================================================================
 
-with TZif.Domain.Value_Object.Timezone_Type;
-
 package body TZif.Domain.Service.Timezone_Lookup is
-
-   use TZif.Domain.Value_Object.Timezone_Type;
 
    --  ========================================================================
    --  Find_Type_Index_At_Time (Helper)
@@ -71,23 +67,25 @@ package body TZif.Domain.Service.Timezone_Lookup is
    --  ========================================================================
 
    function Find_UTC_Offset_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return UTC_Offset_Type
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type)
+      return UTC_Offset_Option
    is
       Type_Index : constant Natural := Find_Type_Index_At_Time (Data, Time);
    begin
       --  Type indices from TZif file directly match vector indices
       --  (vector starts at index 0, same as TZif type indices)
-      --  Bounds check: ensure type index is valid
+      --  Return None if no timezone types available
       if Natural (Data.Timezone_Types.Length) = 0 then
-         --  No types available - should never happen in valid TZif file
-         return 0;
+         return UTC_Offset_Options.None;
       elsif Type_Index in
           Data.Timezone_Types.First_Index .. Data.Timezone_Types.Last_Index
       then
-         return Data.Timezone_Types.Element (Type_Index).UTC_Offset;
+         return
+           UTC_Offset_Options.New_Some
+             (Data.Timezone_Types.Element (Type_Index).UTC_Offset);
       else
-         --  Invalid type index - use first type as fallback
-         return Data.Timezone_Types.First_Element.UTC_Offset;
+         --  Invalid type index - return None rather than silent fallback
+         return UTC_Offset_Options.None;
       end if;
    end Find_UTC_Offset_At_Time;
 
@@ -96,20 +94,23 @@ package body TZif.Domain.Service.Timezone_Lookup is
    --  ========================================================================
 
    function Is_DST_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return Boolean
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return Boolean_Option
    is
       Type_Index : constant Natural := Find_Type_Index_At_Time (Data, Time);
    begin
       --  Type indices from TZif file directly match vector indices
+      --  Return None if no timezone types available
       if Natural (Data.Timezone_Types.Length) = 0 then
-         return False;  -- No types - assume no DST
+         return Boolean_Options.None;
       elsif Type_Index in
           Data.Timezone_Types.First_Index .. Data.Timezone_Types.Last_Index
       then
-         return Data.Timezone_Types.Element (Type_Index).Is_DST;
+         return
+           Boolean_Options.New_Some
+             (Data.Timezone_Types.Element (Type_Index).Is_DST);
       else
-         --  Invalid type index - use first type as fallback
-         return Data.Timezone_Types.First_Element.Is_DST;
+         --  Invalid type index - return None rather than silent fallback
+         return Boolean_Options.None;
       end if;
    end Is_DST_At_Time;
 
@@ -118,20 +119,24 @@ package body TZif.Domain.Service.Timezone_Lookup is
    --  ========================================================================
 
    function Get_Abbreviation_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return String
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type)
+      return Abbreviation_Option
    is
       Type_Index : constant Natural := Find_Type_Index_At_Time (Data, Time);
    begin
       --  Type indices from TZif file directly match vector indices
+      --  Return None if no timezone types available
       if Natural (Data.Timezone_Types.Length) = 0 then
-         return "";  -- No types available
+         return Abbreviation_Options.None;
       elsif Type_Index in
           Data.Timezone_Types.First_Index .. Data.Timezone_Types.Last_Index
       then
-         return Get_Abbreviation (Data.Timezone_Types.Element (Type_Index));
+         return
+           Abbreviation_Options.New_Some
+             (Data.Timezone_Types.Element (Type_Index).Abbreviation);
       else
-         --  Invalid type index - use first type as fallback
-         return Get_Abbreviation (Data.Timezone_Types.First_Element);
+         --  Invalid type index - return None rather than silent fallback
+         return Abbreviation_Options.None;
       end if;
    end Get_Abbreviation_At_Time;
 

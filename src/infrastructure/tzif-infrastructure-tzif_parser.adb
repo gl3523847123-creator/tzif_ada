@@ -87,31 +87,31 @@ package body TZif.Infrastructure.TZif_Parser is
                  Exception_Message (Occ)));
       elsif Exc_Name = "ADA.IO_EXCEPTIONS.END_ERROR" then
          return
-           (Kind    => Infrastructure_Error,
+           (Kind    => Parse_Error,
             Message =>
               To_Bounded_String
                 ("Unexpected end of file: " & Exception_Message (Occ)));
       elsif Exc_Name = "ADA.IO_EXCEPTIONS.DATA_ERROR" then
          return
-           (Kind    => Infrastructure_Error,
+           (Kind    => Parse_Error,
             Message =>
               To_Bounded_String
                 ("Corrupted or malformed data: " & Exception_Message (Occ)));
       elsif Exc_Name = "ADA.IO_EXCEPTIONS.NAME_ERROR" then
          return
-           (Kind    => Infrastructure_Error,
+           (Kind    => Not_Found_Error,
             Message =>
               To_Bounded_String
                 ("File not found: " & Exception_Message (Occ)));
       elsif Exc_Name = "ADA.IO_EXCEPTIONS.USE_ERROR" then
          return
-           (Kind    => Validation_Error,
+           (Kind    => IO_Error,
             Message =>
               To_Bounded_String
                 ("Cannot open file: " & Exception_Message (Occ)));
       else
          return
-           (Kind    => Infrastructure_Error,
+           (Kind    => IO_Error,
             Message =>
               To_Bounded_String
                 ("Stream I/O error: " & Exception_Message (Occ)));

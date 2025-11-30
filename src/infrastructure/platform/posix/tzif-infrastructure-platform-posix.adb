@@ -70,7 +70,7 @@ package body TZif.Infrastructure.Platform.POSIX is
       if Result < 0 then
          return
            String_Result.Error
-             (Infrastructure_Error, "Failed to read symbolic link: " & Path);
+             (IO_Error, "Failed to read symbolic link: " & Path);
       end if;
 
       --  Convert result to Ada string
@@ -98,7 +98,7 @@ package body TZif.Infrastructure.Platform.POSIX is
       when others =>
          return
            String_Result.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Unexpected error reading symbolic link: " & Path);
    end Read_Symbolic_Link;
 

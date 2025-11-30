@@ -93,7 +93,7 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
       if File_Path'Length = 0 then
          return
            Zone_Result.Error
-             (Infrastructure_Error,
+             (Not_Found_Error,
               "Zone '" & Zone_Id_Str & "' not found in system paths");
       end if;
 
@@ -146,7 +146,7 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
       when E : others =>
          return
            Boolean_Result.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Error checking existence of " & Zone_Id_Str & ": " &
               Ada.Exceptions.Exception_Message (E));
    end Exists;
@@ -163,7 +163,7 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
       if File_Path'Length = 0 then
          return
            Version_Result.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Zone '" & Zone_Id_Str & "' not found in system paths");
       end if;
 
@@ -216,7 +216,7 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
       if File_Path'Length = 0 then
          return
            Transition_Info_Result.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Zone '" & Zone_Id_Str & "' not found in system paths");
       end if;
 
@@ -281,7 +281,7 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
       if not Exists (Localtime_Path) then
          return
            Zone_Id_Result.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "/etc/localtime not found - cannot determine local timezone");
       end if;
 
@@ -297,7 +297,7 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
          if not Infrastructure.Platform.String_Result.Is_Ok (Link_Result) then
             return
               Zone_Id_Result.Error
-                (Infrastructure_Error,
+                (IO_Error,
                  "/etc/localtime is not a symlink or cannot be read");
          end if;
 
@@ -333,7 +333,7 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
                if Marker_Index = 0 then
                   return
                     Zone_Id_Result.Error
-                      (Infrastructure_Error,
+                      (IO_Error,
                        "Could not extract zone ID from symlink: " &
                        Link_Target);
                end if;
@@ -364,7 +364,7 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
             --  zone ID
             return
               Zone_Id_Result.Error
-                (Infrastructure_Error,
+                (IO_Error,
                  "/etc/localtime is not a symlink-cannot determine zone ID: " &
                  Ada.Exceptions.Exception_Message (E));
       end;
@@ -426,12 +426,16 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
                                  Zones.Append (Make_Zone_Id (Zone_Name));
                               exception
                                  when Constraint_Error =>
-                                    null;  --  Skip zones that are too long
+                                    --  DELIBERATE: Skip invalid zone names
+                                    --  Malformed entries silently skipped
+                                    null;
                               end;
                            end if;
 
                         when others =>
-                           null;  --  Skip special files
+                           --  DELIBERATE: Skip non-directory/non-file entries
+                           --  Only regular files and directories are relevant
+                           null;
                      end case;
                   end;
                end if;
@@ -441,9 +445,13 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
          End_Search (Search);
       exception
          when Name_Error =>
-            null;  --  Directory doesn't exist or not accessible
+            --  DELIBERATE: Skip directories that don't exist
+            --  Missing paths don't affect the overall scan
+            null;
          when Use_Error  =>
-            null;  --  Permission denied
+            --  DELIBERATE: Skip permission-denied directories
+            --  Protected system directories don't affect scan
+            null;
       end Scan_Directory;
 
       --  ===========================================================
@@ -484,7 +492,7 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
       when E : others =>
          return
            Zone_List_Result.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Failed to list zones: " & Ada.Exceptions.Exception_Message (E));
    end List_All_Zones;
 
@@ -609,7 +617,7 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
       when E : others =>
          return
            Source_List_Result.Error
-             (Infrastructure_Error,
+             (IO_Error,
               "Failed to list sources: " &
               Ada.Exceptions.Exception_Message (E));
    end List_Sources;

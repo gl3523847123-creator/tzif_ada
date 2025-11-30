@@ -45,8 +45,8 @@ procedure Test_Platform_Stubs is
             Err : constant Error_Type := String_Result.Error_Info (Result);
          begin
             Assert
-              (Err.Kind = Infrastructure_Error,
-               "Error should be Infrastructure_Error");
+              (Err.Kind = Internal_Error,
+               "Error should be Internal_Error");
          end;
       end if;
    end Test_Windows_Stub;

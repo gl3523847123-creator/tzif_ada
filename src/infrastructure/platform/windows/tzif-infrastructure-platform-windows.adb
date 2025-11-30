@@ -55,7 +55,7 @@ package body TZif.Infrastructure.Platform.Windows is
       --  For now, return an error indicating not implemented
       return
         String_Result.Error
-          (Infrastructure_Error,
+          (Internal_Error,
            "Windows platform support not yet implemented. " &
            "Timezone detection on Windows requires registry access and " &
            "Windows-to-IANA timezone name mapping.");

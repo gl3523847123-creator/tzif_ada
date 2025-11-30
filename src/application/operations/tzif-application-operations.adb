@@ -70,7 +70,7 @@ is
          if Length = 0 then
             Result :=
               Find_By_Id_Result.Error
-                (TZif.Domain.Error.Infrastructure_Error,
+                (TZif.Domain.Error.IO_Error,
                  "No data read from zone file");
             return;
          end if;

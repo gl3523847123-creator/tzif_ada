@@ -10,7 +10,11 @@ pragma Ada_2022;
 --
 --  ===========================================================================
 
+with TZif.Domain.Service.Timezone_Lookup;
+
 package body TZif.Domain.TZif_Data is
+
+   package Tz_Lookup renames TZif.Domain.Service.Timezone_Lookup;
 
    --  ========================================================================
    --  Find_Type_At_Time
@@ -51,43 +55,66 @@ package body TZif.Domain.TZif_Data is
    --  ========================================================================
    --  Find_Offset_At_Time
    --  ========================================================================
+   --  Delegates to Domain Service for proper Option handling
 
    function Find_Offset_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return UTC_Offset_Type
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type)
+      return UTC_Offset_Option
    is
-      Type_Index : constant Natural := Find_Type_At_Time (Data, Time);
-      TZ_Type    : constant Timezone_Type.Timezone_Type_Record :=
-        Get_Type (Data, Type_Index);
+      Service_Result : constant Tz_Lookup.UTC_Offset_Option :=
+        Tz_Lookup.Find_UTC_Offset_At_Time (Data, Time);
    begin
-      return TZ_Type.UTC_Offset;
+      --  Convert from service Option type to our Option type
+      if Tz_Lookup.UTC_Offset_Options.Is_Some (Service_Result) then
+         return
+           UTC_Offset_Options.New_Some
+             (Tz_Lookup.UTC_Offset_Options.Value (Service_Result));
+      else
+         return UTC_Offset_Options.None;
+      end if;
    end Find_Offset_At_Time;
 
    --  ========================================================================
    --  Is_DST_At_Time
    --  ========================================================================
+   --  Delegates to Domain Service for proper Option handling
 
    function Is_DST_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return Boolean
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return Boolean_Option
    is
-      Type_Index : constant Natural := Find_Type_At_Time (Data, Time);
-      TZ_Type    : constant Timezone_Type.Timezone_Type_Record :=
-        Get_Type (Data, Type_Index);
+      Service_Result : constant Tz_Lookup.Boolean_Option :=
+        Tz_Lookup.Is_DST_At_Time (Data, Time);
    begin
-      return TZ_Type.Is_DST;
+      --  Convert from service Option type to our Option type
+      if Tz_Lookup.Boolean_Options.Is_Some (Service_Result) then
+         return
+           Boolean_Options.New_Some
+             (Tz_Lookup.Boolean_Options.Value (Service_Result));
+      else
+         return Boolean_Options.None;
+      end if;
    end Is_DST_At_Time;
 
    --  ========================================================================
    --  Get_Abbreviation_At_Time
    --  ========================================================================
+   --  Delegates to Domain Service for proper Option handling
 
    function Get_Abbreviation_At_Time
-     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type) return String
+     (Data : TZif_Data_Type; Time : Epoch_Seconds_Type)
+      return Abbreviation_Option
    is
-      Type_Index : constant Natural := Find_Type_At_Time (Data, Time);
-      TZ_Type    : constant Timezone_Type.Timezone_Type_Record :=
-        Get_Type (Data, Type_Index);
+      Service_Result : constant Tz_Lookup.Abbreviation_Option :=
+        Tz_Lookup.Get_Abbreviation_At_Time (Data, Time);
    begin
-      return Timezone_Type.Get_Abbreviation (TZ_Type);
+      --  Convert from service Option type to our Option type
+      if Tz_Lookup.Abbreviation_Options.Is_Some (Service_Result) then
+         return
+           Abbreviation_Options.New_Some
+             (Tz_Lookup.Abbreviation_Options.Value (Service_Result));
+      else
+         return Abbreviation_Options.None;
+      end if;
    end Get_Abbreviation_At_Time;
 
 end TZif.Domain.TZif_Data;

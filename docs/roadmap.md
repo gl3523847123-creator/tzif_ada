@@ -123,9 +123,37 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Focus**: Enhanced test coverage and performance validation
 
+### High Priority
+
+#### 8. Test Coverage Expansion
+**Status**: Proposed
+**Effort**: Medium
+**Impact**: High
+
+- Increase unit test coverage for domain services
+- Add boundary condition tests for timezone lookups
+- Add error path tests for Option return values
+- Add tests for all error kinds (Parse_Error, Not_Found_Error, IO_Error, etc.)
+- Document test coverage metrics and goals
+
+**Rationale**: Code review identified areas where additional test coverage would improve confidence in error handling and edge cases.
+
+#### 9. Exception Handler Audit
+**Status**: Proposed
+**Effort**: Low
+**Impact**: Medium
+
+- Audit all silent exception handlers marked with DELIBERATE comments
+- Verify each handler is truly benign (not swallowing real errors)
+- Consider adding telemetry/logging hooks for exception tracking
+- Document exception handling policy
+- Update handlers if patterns cause data loss
+
+**Rationale**: Silent exception handlers in directory scanning are intentional but should be periodically reviewed to ensure they remain appropriate as the codebase evolves.
+
 ### Medium Priority
 
-#### 8. Property-Based Testing for Parser
+#### 10. Property-Based Testing for Parser
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Medium
@@ -138,7 +166,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Property-based testing excels at finding edge cases in parsers. Would significantly increase confidence in TZif parser correctness across all possible inputs.
 
-#### 9. Performance Benchmark Suite
+#### 11. Performance Benchmark Suite
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Medium
@@ -160,7 +188,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 ### Low Priority
 
-#### 10. Port Versioning Strategy
+#### 12. Port Versioning Strategy
 **Status**: Planning
 **Effort**: Medium
 **Impact**: Low (Future-proofing)
@@ -173,7 +201,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Establishes clear path for API evolution without breaking existing users. Important for long-term library stability.
 
-#### 11. Error Context Enrichment
+#### 13. Error Context Enrichment
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Low
@@ -186,7 +214,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Enhanced error diagnostics would aid production debugging. Useful for troubleshooting complex error scenarios.
 
-#### 12. Advanced Timezone Queries
+#### 14. Advanced Timezone Queries
 **Status**: Proposed
 **Effort**: High
 **Impact**: Low
@@ -199,7 +227,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Advanced queries would support more sophisticated timezone applications. Nice-to-have features for specialized use cases.
 
-#### 13. Controlled Types for Resource Management
+#### 15. Controlled Types for Resource Management
 **Status**: Consideration
 **Effort**: Low
 **Impact**: Low
@@ -211,7 +239,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Current design doesn't need cleanup actions, but future enhancements might benefit from controlled types.
 
-#### 14. Cache Persistence Investigation
+#### 16. Cache Persistence Investigation
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Low
@@ -224,7 +252,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Current in-memory cache performs excellently (20ms cold start). Persisted cache adds SPARK/I/O complexity. Implementation deferred pending user demand and performance requirements.
 
-#### 15. Parallel Source Discovery Investigation
+#### 17. Parallel Source Discovery Investigation
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Low
@@ -237,7 +265,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Current sequential discovery is sufficient (5-15ms for typical sources). Parallel implementation adds concurrency complexity. Deferred pending user demand for faster discovery.
 
-#### 16. Improved Infinite Loop Detection
+#### 18. Improved Infinite Loop Detection
 **Status**: Proposed
 **Effort**: Low
 **Impact**: Low

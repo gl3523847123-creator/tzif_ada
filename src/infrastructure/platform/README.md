@@ -72,7 +72,7 @@ end Platform_Operations;
 **Status:** ⏳ Stub Implementation  
 
 **Current Behavior:**
-- Returns `Infrastructure_Error` with message "Not yet implemented"
+- Returns `Internal_Error` with message "Not yet implemented"
 
 **Future Implementation Strategy:**
 

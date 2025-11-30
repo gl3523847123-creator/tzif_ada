@@ -20,8 +20,12 @@ procedure Test_Timezone_Lookup is
    use TZif.Domain.Value_Object.UTC_Offset;
    use TZif.Domain.Value_Object.Timezone_Type;
    use TZif.Domain.Value_Object.Transition;
+
+   package Tz_Lookup renames TZif.Domain.Service.Timezone_Lookup;
+
    Test_Count : Natural := 0;
    Pass_Count : Natural := 0;
+
    procedure Assert (Condition : Boolean; Test_Name : String) is
    begin
       Test_Count := Test_Count + 1;
@@ -32,6 +36,36 @@ procedure Test_Timezone_Lookup is
          Put_Line ("  [FAIL] " & Test_Name);
       end if;
    end Assert;
+
+   --  Helper: Check if offset Option equals expected value
+   function Offset_Equals
+     (Opt : Tz_Lookup.UTC_Offset_Option; Expected : UTC_Offset_Type)
+      return Boolean
+   is
+   begin
+      return Tz_Lookup.UTC_Offset_Options.Is_Some (Opt)
+        and then Tz_Lookup.UTC_Offset_Options.Value (Opt) = Expected;
+   end Offset_Equals;
+
+   --  Helper: Check if DST Option equals expected value
+   function DST_Equals
+     (Opt : Tz_Lookup.Boolean_Option; Expected : Boolean) return Boolean
+   is
+   begin
+      return Tz_Lookup.Boolean_Options.Is_Some (Opt)
+        and then Tz_Lookup.Boolean_Options.Value (Opt) = Expected;
+   end DST_Equals;
+
+   --  Helper: Check if abbreviation Option equals expected string
+   function Abbrev_Equals
+     (Opt : Tz_Lookup.Abbreviation_Option; Expected : String) return Boolean
+   is
+   begin
+      return Tz_Lookup.Abbreviation_Options.Is_Some (Opt)
+        and then Abbreviation_Strings.To_String
+            (Tz_Lookup.Abbreviation_Options.Value (Opt)) = Expected;
+   end Abbrev_Equals;
+
    --  =====================================================================
    --  Test: No Transitions
    --  =====================================================================
@@ -44,18 +78,16 @@ procedure Test_Timezone_Lookup is
           (UTC_Offset => 0, Is_DST => False, Abbreviation => "UTC");
       Data.Timezone_Types.Append (TZ_Type);
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Find_UTC_Offset_At_Time (Data, 0)
-         = 0,
+        (Offset_Equals (Tz_Lookup.Find_UTC_Offset_At_Time (Data, 0), 0),
          "No transitions: should return first type offset");
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Find_UTC_Offset_At_Time
-           (Data, 1000000)
-         = 0,
+        (Offset_Equals (Tz_Lookup.Find_UTC_Offset_At_Time (Data, 1000000), 0),
          "No transitions: should return first type offset for any time");
       Assert
-        (not TZif.Domain.Service.Timezone_Lookup.Is_DST_At_Time (Data, 0),
+        (DST_Equals (Tz_Lookup.Is_DST_At_Time (Data, 0), False),
          "No transitions: should return first type DST status");
    end Test_No_Transitions;
+
    --  =====================================================================
    --  Test: Before First Transition
    --  =====================================================================
@@ -74,13 +106,13 @@ procedure Test_Timezone_Lookup is
       Trans := (Time => 100, Type_Index => 1);
       Data.Transitions.Append (Trans);
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Find_UTC_Offset_At_Time (Data, 50)
-         = -14400,
+        (Offset_Equals (Tz_Lookup.Find_UTC_Offset_At_Time (Data, 50), -14400),
          "Before first transition: should use first transition's type");
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Is_DST_At_Time (Data, 50),
+        (DST_Equals (Tz_Lookup.Is_DST_At_Time (Data, 50), True),
          "Before first transition: should use first transition's DST");
    end Test_Before_First_Transition;
+
    --  =====================================================================
    --  Test: After Last Transition
    --  =====================================================================
@@ -101,14 +133,13 @@ procedure Test_Timezone_Lookup is
       Data.Transitions.Append (Trans1);
       Data.Transitions.Append (Trans2);
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Find_UTC_Offset_At_Time
-           (Data, 300)
-         = -18000,
+        (Offset_Equals (Tz_Lookup.Find_UTC_Offset_At_Time (Data, 300), -18000),
          "After last transition: should use EST offset");
       Assert
-        (not TZif.Domain.Service.Timezone_Lookup.Is_DST_At_Time (Data, 300),
+        (DST_Equals (Tz_Lookup.Is_DST_At_Time (Data, 300), False),
          "After last transition: should not be DST");
    end Test_After_Last_Transition;
+
    --  =====================================================================
    --  Test: At Transition
    --  =====================================================================
@@ -125,14 +156,13 @@ procedure Test_Timezone_Lookup is
       Trans := (Time => 100, Type_Index => 1);
       Data.Transitions.Append (Trans);
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Find_UTC_Offset_At_Time
-           (Data, 100)
-         = -14400,
+        (Offset_Equals (Tz_Lookup.Find_UTC_Offset_At_Time (Data, 100), -14400),
          "At transition: should use new type offset");
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Is_DST_At_Time (Data, 100),
+        (DST_Equals (Tz_Lookup.Is_DST_At_Time (Data, 100), True),
          "At transition: should use new type DST");
    end Test_At_Transition;
+
    --  =====================================================================
    --  Test: Between Transitions
    --  =====================================================================
@@ -151,14 +181,13 @@ procedure Test_Timezone_Lookup is
       Data.Transitions.Append (Trans1);
       Data.Transitions.Append (Trans2);
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Find_UTC_Offset_At_Time
-           (Data, 150)
-         = -14400,
+        (Offset_Equals (Tz_Lookup.Find_UTC_Offset_At_Time (Data, 150), -14400),
          "Between transitions: should use EDT offset");
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Is_DST_At_Time (Data, 150),
+        (DST_Equals (Tz_Lookup.Is_DST_At_Time (Data, 150), True),
          "Between transitions: should be DST");
    end Test_Between_Transitions;
+
    --  =====================================================================
    --  Test: DST Detection
    --  =====================================================================
@@ -175,12 +204,13 @@ procedure Test_Timezone_Lookup is
       Trans := (Time => 100, Type_Index => 1);
       Data.Transitions.Append (Trans);
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Is_DST_At_Time (Data, 50),
+        (DST_Equals (Tz_Lookup.Is_DST_At_Time (Data, 50), True),
          "Before transition: uses first transition's type (EDT/DST)");
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Is_DST_At_Time (Data, 150),
+        (DST_Equals (Tz_Lookup.Is_DST_At_Time (Data, 150), True),
          "After transition: should be DST (EDT)");
    end Test_DST_Detection;
+
    --  =====================================================================
    --  Test: Abbreviation Lookup
    --  =====================================================================
@@ -197,11 +227,10 @@ procedure Test_Timezone_Lookup is
       Trans := (Time => 100, Type_Index => 1);
       Data.Transitions.Append (Trans);
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Get_Abbreviation_At_Time
-           (Data, 150)
-         = "EDT",
+        (Abbrev_Equals (Tz_Lookup.Get_Abbreviation_At_Time (Data, 150), "EDT"),
          "Should return correct abbreviation for time");
    end Test_Abbreviation_Lookup;
+
    --  =====================================================================
    --  Test: Timezone_Type Accessor Functions
    --  =====================================================================
@@ -233,6 +262,7 @@ procedure Test_Timezone_Lookup is
         (Has_Abbreviation (Type_Standard, "EST"),
          "Should match abbreviation EST");
    end Test_Timezone_Type_Accessors;
+
    --  =====================================================================
    --  Test: Error Paths - No Types Available
    --  =====================================================================
@@ -244,21 +274,21 @@ procedure Test_Timezone_Lookup is
       --  Add a transition but no types (invalid state but test error handling)
       Trans := (Time => 100, Type_Index => 0);
       Data.Transitions.Append (Trans);
-      --  Should return fallback values without crashing
+      --  Should return None (no fallback values)
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Find_UTC_Offset_At_Time
-           (Data, 150)
-         = 0,
-         "No types: should return 0 offset");
+        (Tz_Lookup.UTC_Offset_Options.Is_None
+           (Tz_Lookup.Find_UTC_Offset_At_Time (Data, 150)),
+         "No types: should return None for offset");
       Assert
-        (not TZif.Domain.Service.Timezone_Lookup.Is_DST_At_Time (Data, 150),
-         "No types: should return False for DST");
+        (Tz_Lookup.Boolean_Options.Is_None
+           (Tz_Lookup.Is_DST_At_Time (Data, 150)),
+         "No types: should return None for DST");
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Get_Abbreviation_At_Time
-           (Data, 150)
-         = "",
-         "No types: should return empty abbreviation");
+        (Tz_Lookup.Abbreviation_Options.Is_None
+           (Tz_Lookup.Get_Abbreviation_At_Time (Data, 150)),
+         "No types: should return None for abbreviation");
    end Test_Error_No_Types;
+
    --  =====================================================================
    --  Test: Error Paths - Invalid Type Index
    --  =====================================================================
@@ -273,21 +303,21 @@ procedure Test_Timezone_Lookup is
       Data.Timezone_Types.Append (TZ_Type);
       Trans := (Time => 100, Type_Index => 99);  --  Invalid index
       Data.Transitions.Append (Trans);
-      --  Should fallback to first type
+      --  Should return None (no silent fallback)
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Find_UTC_Offset_At_Time
-           (Data, 150)
-         = -18000,
-         "Invalid type index: should fallback to first type offset");
+        (Tz_Lookup.UTC_Offset_Options.Is_None
+           (Tz_Lookup.Find_UTC_Offset_At_Time (Data, 150)),
+         "Invalid type index: should return None for offset");
       Assert
-        (not TZif.Domain.Service.Timezone_Lookup.Is_DST_At_Time (Data, 150),
-         "Invalid type index: should fallback to first type DST");
+        (Tz_Lookup.Boolean_Options.Is_None
+           (Tz_Lookup.Is_DST_At_Time (Data, 150)),
+         "Invalid type index: should return None for DST");
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Get_Abbreviation_At_Time
-           (Data, 150)
-         = "EST",
-         "Invalid type index: should fallback to first type abbreviation");
+        (Tz_Lookup.Abbreviation_Options.Is_None
+           (Tz_Lookup.Get_Abbreviation_At_Time (Data, 150)),
+         "Invalid type index: should return None for abbreviation");
    end Test_Error_Invalid_Type_Index;
+
    --  =====================================================================
    --  Test: Binary Search Edge Case - Mid Before First
    --  =====================================================================
@@ -301,13 +331,12 @@ procedure Test_Timezone_Lookup is
       Data.Timezone_Types.Append (Type1);
       Trans1 := (Time => 100, Type_Index => 0);
       Data.Transitions.Append (Trans1);
-      --  Query time way before first transition should trigger the mid >
-      --  first_index path
+      --  Query time way before first transition
       Assert
-        (TZif.Domain.Service.Timezone_Lookup.Find_UTC_Offset_At_Time (Data, 1)
-         = -18000,
+        (Offset_Equals (Tz_Lookup.Find_UTC_Offset_At_Time (Data, 1), -18000),
          "Before first transition: should use first transition's type");
    end Test_Binary_Search_Edge;
+
 begin
    --  Run all tests
    Test_No_Transitions;

@@ -13,12 +13,16 @@ pragma Ada_2022;
 with TZif.Infrastructure.TZif_Parser;
 with TZif.Domain.Service.Timezone_Lookup;
 with TZif.Domain.TZif_Data;
+with TZif.Domain.Value_Object.Timezone_Type;
 
 package body TZif.Infrastructure.Query_Timezone_Info is
 
    use TZif.Infrastructure.TZif_Parser;
-   use TZif.Domain.Service.Timezone_Lookup;
    use TZif.Domain.TZif_Data;
+   use TZif.Domain.Value_Object.Timezone_Type;
+   use TZif.Domain.Error;
+
+   package Tz_Lookup renames TZif.Domain.Service.Timezone_Lookup;
 
    --  ========================================================================
    --  Query_Timezone_Info
@@ -36,7 +40,6 @@ package body TZif.Infrastructure.Query_Timezone_Info is
       if not Infrastructure.TZif_Parser.Parse_Result.Is_Ok (Parse_Result) then
          --  Return parsing error
          declare
-            use TZif.Domain.Error;
             Parse_Error   : constant Error_Type :=
               Infrastructure.TZif_Parser.Parse_Result.Error_Info
                 (Parse_Result);
@@ -53,33 +56,49 @@ package body TZif.Infrastructure.Query_Timezone_Info is
            Infrastructure.TZif_Parser.Parse_Result.Value (Parse_Result);
 
          --  Step 3: Query domain service for timezone information
-         UTC_Offset : constant UTC_Offset_Type :=
-           Find_UTC_Offset_At_Time (Data, Epoch_Time);
+         Offset_Result : constant Tz_Lookup.UTC_Offset_Option :=
+           Tz_Lookup.Find_UTC_Offset_At_Time (Data, Epoch_Time);
 
-         Is_DST : constant Boolean :=
-           Domain.Service.Timezone_Lookup.Is_DST_At_Time (Data, Epoch_Time);
+         DST_Result : constant Tz_Lookup.Boolean_Option :=
+           Tz_Lookup.Is_DST_At_Time (Data, Epoch_Time);
 
-         Abbrev : constant String :=
-           Domain.Service.Timezone_Lookup.Get_Abbreviation_At_Time
-             (Data, Epoch_Time);
-
-         --  Step 4: Build result
-         Info : Timezone_Info;
+         Abbrev_Result : constant Tz_Lookup.Abbreviation_Option :=
+           Tz_Lookup.Get_Abbreviation_At_Time (Data, Epoch_Time);
       begin
-         Info.UTC_Offset  := UTC_Offset;
-         Info.Is_DST      := Is_DST;
-         Info.Abbr_Length := Abbrev'Length;
+         --  Check if all lookups succeeded (valid timezone types exist)
+         if Tz_Lookup.UTC_Offset_Options.Is_None (Offset_Result)
+           or else Tz_Lookup.Boolean_Options.Is_None (DST_Result)
+           or else Tz_Lookup.Abbreviation_Options.Is_None (Abbrev_Result)
+         then
+            return
+              Info_Result.Error
+                (Not_Found_Error, "No timezone types available in TZif data");
+         end if;
 
-         --  Copy abbreviation (pad if necessary)
-         for I in 1 .. Info.Abbreviation'Length loop
-            if I <= Abbrev'Length then
-               Info.Abbreviation (I) := Abbrev (Abbrev'First + I - 1);
-            else
-               Info.Abbreviation (I) := ' ';
-            end if;
-         end loop;
+         --  Step 4: Build result with unwrapped values
+         declare
+            Abbrev : constant String :=
+              Abbreviation_Strings.To_String
+                (Tz_Lookup.Abbreviation_Options.Value (Abbrev_Result));
+            Info   : Timezone_Info;
+         begin
+            Info.UTC_Offset :=
+              Tz_Lookup.UTC_Offset_Options.Value (Offset_Result);
+            Info.Is_DST     :=
+              Tz_Lookup.Boolean_Options.Value (DST_Result);
+            Info.Abbr_Length := Abbrev'Length;
 
-         return Info_Result.Ok (Info);
+            --  Copy abbreviation (pad if necessary)
+            for I in 1 .. Info.Abbreviation'Length loop
+               if I <= Abbrev'Length then
+                  Info.Abbreviation (I) := Abbrev (Abbrev'First + I - 1);
+               else
+                  Info.Abbreviation (I) := ' ';
+               end if;
+            end loop;
+
+            return Info_Result.Ok (Info);
+         end;
       end;
    end Query_Timezone_Info;
 

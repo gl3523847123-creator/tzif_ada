@@ -26,6 +26,31 @@ TZif is an Ada 2022 library for parsing and querying IANA's compiled timezone in
 - ✅ Generic I/O plugin pattern for platform portability
 - ✅ RFC 9636 compliant
 
+## Platform Support
+
+| Platform | Status | Notes |
+|----------|--------|-------|
+| **Linux** | ✅ Full | All distributions with `/usr/share/zoneinfo` |
+| **macOS** | ✅ Full | All versions with `/var/db/timezone/zoneinfo` |
+| **FreeBSD/NetBSD/OpenBSD** | ✅ Full | Standard zoneinfo paths |
+| **Windows** | ⚠️ Not Supported | See limitations below |
+| **Embedded** | 🔧 Custom | Requires I/O plugin implementation |
+
+### Windows Limitations
+
+Windows does not use the IANA TZif file format natively. This library currently does not support Windows timezone detection (`Find_My_Id`). Reasons:
+
+1. **Different Format**: Windows uses registry-based timezone configuration
+2. **Name Mapping Required**: Windows timezone names differ from IANA names (e.g., "Pacific Standard Time" vs "America/Los_Angeles")
+3. **API Bindings Needed**: Requires Win32 Registry and `GetDynamicTimeZoneInformation` bindings
+
+**Workarounds**:
+- Pre-configure the timezone ID in your application
+- Use environment variables (e.g., `TZ=America/New_York`)
+- Deploy with bundled zoneinfo files and custom paths
+
+**Future**: Windows support may be added if there is demand. See [roadmap](docs/roadmap.md).
+
 ## Architecture
 
 ```

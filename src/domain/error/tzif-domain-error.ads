@@ -36,12 +36,14 @@ is
    --  ========================================================================
 
    --  Categories of errors that can occur in the application
+   --  Ordered from most specific/recoverable to most severe
    type Error_Kind is
-     (Validation_Error,      --  Domain validation failures (invalid input)
-      Infrastructure_Error,  --  Infrastructure failures (I/O, file not found)
-      Resource_Error,  --  Resource exhaustion (out of memory, stack overflow)
-      Internal_Error);  --  Internal errors (precondition violations, shouldn't
-   --  happen)
+     (Validation_Error,  --  Domain validation failures (invalid input)
+      Parse_Error,       --  Malformed data (corrupted TZif, bad magic)
+      Not_Found_Error,   --  Resource not found (file, zone, types)
+      IO_Error,          --  I/O operations (read/write, permissions)
+      Resource_Error,    --  Resource exhaustion (out of memory)
+      Internal_Error);   --  Precondition violations (shouldn't happen)
 
    --  ========================================================================
    --  Error Type Record

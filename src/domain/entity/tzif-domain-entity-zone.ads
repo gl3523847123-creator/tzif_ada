@@ -17,7 +17,6 @@ pragma Ada_2022;
 --  Dependencies:
 --    TZif.Domain.Value_Object.Zone_Id
 --    TZif.Domain.TZif_Data
---    Preelaborate
 --
 --  ===========================================================================
 
