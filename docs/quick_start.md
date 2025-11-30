@@ -319,7 +319,7 @@ make test-all
 ########################################
 ```
 
-**All 244 tests passing** (126 unit + 118 integration)
+**All 253 tests passing** (126 unit + 116 integration + 11 examples)
 
 ---
 
