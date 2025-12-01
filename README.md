@@ -1,6 +1,6 @@
-# TZif - IANA Timezone Information Library
+# IANA Timezone Information Library
 
-[![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE) [![Ada](https://img.shields.io/badge/Ada-2022-blue.svg)](https://ada-lang.io) [![Alire](https://img.shields.io/badge/Alire-2.0+-blue.svg)](https://alire.ada.dev)
+[![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE) [![Ada](https://img.shields.io/badge/Ada-2022-blue.svg)](https://ada-lang.io) [![SPARK](https://img.shields.io/badge/SPARK-Friendly-green.svg)](https://www.adacore.com/about-spark) [![Alire](https://img.shields.io/badge/Alire-2.0+-blue.svg)](https://alire.ada.dev)
 
 **Version:** 1.0.0<br>
 **Date:** 2025-11-29<br>
@@ -19,7 +19,7 @@ TZif is an Ada 2022 library for parsing and querying IANA's compiled timezone in
 - ✅ Query timezone transitions at any epoch time
 - ✅ Discover and validate timezone sources
 - ✅ Find zones by ID, pattern, region, or regex
-- ✅ Detect system's local timezone
+- ✅ Detect the system's local timezone
 - ✅ 4-layer hexagonal architecture (Domain, Application, Infrastructure, API)
 - ✅ Result monad error handling (via `functional` crate)
 - ✅ Public API facade with stable interface
@@ -49,7 +49,34 @@ Windows does not use the IANA TZif file format natively. This library currently 
 - Use environment variables (e.g., `TZ=America/New_York`)
 - Deploy with bundled zoneinfo files and custom paths
 
-**Future**: Windows support may be added if there is demand. See [roadmap](docs/roadmap.md).
+**Future**: Windows support may be added if demand arises. See [roadmap](docs/roadmap.md).
+
+### Embedded Platform Support
+
+TZif uses a **three-package API pattern** with dependency injection for platform portability:
+
+| Package | Purpose |
+|---------|---------|
+| `TZif.API.Operations` | Generic operations (SPARK-safe, no I/O dependencies) |
+| `TZif.API.Desktop` | Composition root for desktop (file system I/O) |
+| `TZif.API` | Public facade (uses Desktop by default) |
+
+**Default**: Desktop platforms use file system I/O via `TZif.API.Desktop`.
+
+**For embedded platforms**, create your own composition root:
+
+```ada
+--  1. Implement the I/O port for your platform
+function Flash_Read_Zone (Path : Path_String) return Zone_Data_Result;
+
+--  2. Instantiate operations with your I/O adapter
+package Embedded_Ops is new TZif.API.Operations (Read_Zone => Flash_Read_Zone);
+
+--  3. Use operations directly
+Result : constant Zone_Result := Embedded_Ops.Find_By_Id (Zone_Id);
+```
+
+See **[All About Our API](docs/guides/all_about_our_api.md)** for detailed architecture and implementation guidance.
 
 ## Architecture
 
@@ -96,71 +123,47 @@ Add to your `alire.toml`:
 tzif = "^1.0.0"
 ```
 
-## Usage
+## Quick Snippets
 
-### Find System Timezone
-
-```ada
-with TZif.API;
-
-procedure Main is
-   use TZif.API;
-
-   Result : constant My_Zone_Result := Find_My_Id;
-begin
-   if Is_Ok (Result) then
-      Put_Line ("System timezone: " & To_String (Value (Result)));
-   else
-      Put_Line ("Could not detect timezone");
-   end if;
-end Main;
-```
-
-### Query Timezone Transition
+All operations use `TZif.API` and return Result types. See `/examples` for complete programs.
 
 ```ada
-with TZif.API;
+with TZif.API; use TZif.API;
 
-procedure Main is
-   use TZif.API;
+--  Detect system timezone
+Result : constant My_Zone_Result := Find_My_Id;
 
-   Zone_Id : constant Zone_Id_String := Make_Zone_Id_String ("America/New_York");
-   Epoch   : constant Epoch_Seconds_Type := 1700000000;  -- Nov 2023
-   Result  : constant Transition_Result :=
-     Get_Transition_At_Epoch (Zone_Id, Epoch);
-begin
-   if Is_Ok (Result) then
-      --  Access transition info (offset, DST status, etc.)
-      null;
-   else
-      Put_Line ("Error: " & Error_Strings.To_String (Error_Info (Result)));
-   end if;
-end Main;
-```
+--  Find zone by exact ID
+Result : constant Zone_Result := Find_By_Id (Make_Zone_Id ("America/New_York"));
 
-### List All Timezones
+--  Get transition info at epoch time
+Result : constant Transition_Result :=
+  Get_Transition_At_Epoch (Make_Zone_Id_String ("America/New_York"), 1700000000);
 
-```ada
-with TZif.API;
+--  Get timezone database version
+Result : constant Version_Result := Get_Version (Source);
 
-procedure Main is
-   use TZif.API;
+--  Discover available timezone sources
+Result : constant Sources_Result := Discover_Sources;
 
-   --  First load a timezone source
-   Source_Result : constant Load_Source_Result :=
-     Load_Source (Make_Path_String ("/usr/share/zoneinfo"));
-begin
-   if Load_Port.Load_Source_Result_Package.Is_Ok (Source_Result) then
-      declare
-         Source : constant Source_Info_Type :=
-           Load_Port.Load_Source_Result_Package.Value (Source_Result);
-         Zones : constant Zone_List_Result := List_All_Zones (Source);
-      begin
-         --  Process zone list...
-         null;
-      end;
-   end if;
-end Main;
+--  Load a specific timezone source
+Result : constant Load_Source_Result :=
+  Load_Source (Make_Path_String ("/usr/share/zoneinfo"));
+
+--  Validate source integrity
+Result : constant Validate_Result := Validate_Source (Source);
+
+--  List all zones in a source
+Result : constant Zone_List_Result := List_All_Zones (Source);
+
+--  Search by substring pattern
+Result : constant Zone_List_Result := Find_By_Pattern (Source, "New");
+
+--  Search by geographic region
+Result : constant Zone_List_Result := Find_By_Region (Source, "America");
+
+--  Search by regex
+Result : constant Zone_List_Result := Find_By_Regex (Source, "America/New.*");
 ```
 
 ## Testing
