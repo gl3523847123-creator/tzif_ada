@@ -200,6 +200,42 @@ class AdaReleaseAdapter(BaseReleaseAdapter):
 
         return True
 
+    def _get_ada_package_casing(self, config, project_name: str) -> str:
+        """
+        Get the correct Ada package casing from the main package file.
+
+        Reads src/<project>/<project>.ads (or src/<project>.ads) to find the
+        actual package declaration and extract its casing.
+
+        Args:
+            config: ReleaseConfig instance
+            project_name: Project name from alire.toml (e.g., "tzif")
+
+        Returns:
+            Correctly cased package name (e.g., "TZif" not "Tzif")
+        """
+        # Try common locations for main package file
+        search_paths = [
+            config.project_root / 'src' / f'{project_name}.ads',
+            config.project_root / 'src' / project_name / f'{project_name}.ads',
+            config.project_root / f'{project_name}.ads',
+        ]
+
+        for pkg_file in search_paths:
+            if pkg_file.exists():
+                content = pkg_file.read_text(encoding='utf-8')
+                # Look for "package <Name> is" or "package <Name> with"
+                match = re.search(
+                    r'^\s*package\s+(\S+)\s+(?:is|with)',
+                    content,
+                    re.MULTILINE | re.IGNORECASE
+                )
+                if match:
+                    return match.group(1)
+
+        # Fallback: capitalize each part (hybrid_app -> Hybrid_App)
+        return '_'.join(part.capitalize() for part in project_name.split('_'))
+
     def generate_version_file(self, config) -> bool:
         """
         Generate Version Ada package from alire.toml.
@@ -247,8 +283,19 @@ class AdaReleaseAdapter(BaseReleaseAdapter):
             prerelease = prerelease or ''
             build = build or ''
 
-            # Convert to Ada casing (hybrid_app_ada -> Hybrid_App_Ada)
-            ada_package = '_'.join(part.capitalize() for part in project_name.split('_'))
+            # Check if version file already exists with correct version
+            output_path = config.project_root / 'src' / 'version' / f'{project_name}-version.ads'
+            if output_path.exists():
+                existing = output_path.read_text(encoding='utf-8')
+                # Check if version already matches
+                existing_ver = re.search(r'Version\s*:\s*constant\s+String\s*:=\s*"([^"]+)"', existing)
+                if existing_ver and existing_ver.group(1) == version_str:
+                    print(f"  Version file already up-to-date ({version_str}), skipping")
+                    return True
+
+            # Get Ada package casing from main package file
+            # Look for "package <Name>" declaration to get exact casing
+            ada_package = self._get_ada_package_casing(config, project_name)
 
             # Generate Ada package source
             ada_code = f'''pragma Ada_2022;
@@ -313,7 +360,6 @@ end {ada_package}.Version;
 '''
 
             # Write output file to src/version/ (cross-cutting, outside hexagonal layers)
-            output_path = config.project_root / 'src' / 'version' / f'{project_name}-version.ads'
             output_path.parent.mkdir(parents=True, exist_ok=True)
             output_path.write_text(ada_code, encoding='utf-8')
 
