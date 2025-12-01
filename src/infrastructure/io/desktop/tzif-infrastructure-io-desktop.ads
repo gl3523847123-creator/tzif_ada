@@ -27,6 +27,10 @@ with Ada.Calendar;
 with TZif.Domain.Error.Result;
 with TZif.Application.Port.Inbound.Find_By_Id;
 with TZif.Application.Port.Inbound.Discover_Sources;
+with TZif.Application.Port.Inbound.Get_Version;
+with TZif.Application.Port.Inbound.Find_My_Id;
+with TZif.Application.Port.Inbound.List_All_Order_By_Id;
+with TZif.Domain.Value_Object.Source_Info;
 
 package TZif.Infrastructure.IO.Desktop with
   SPARK_Mode => Off
@@ -141,5 +145,60 @@ is
      (Id        : TZif.Application.Port.Inbound.Find_By_Id.Zone_Id_Input_Type;
       Timestamp : out Timestamp_Type;
       Result    : out Get_Modified_Time_Result.Result);
+
+   -------------------------------------------------------------------------
+   --  Read_Version_File
+   --
+   --  Reads the +VERSION file from the timezone source directory.
+   --
+   --  Parameters:
+   --    Source : Source info containing the path to read from
+   --    Result : Ok(Version_String) or Error(Not_Found, IO_Error)
+   --
+   --  Implementation:
+   --    - Opens {source_path}/+VERSION
+   --    - Reads first line as version string
+   --    - Returns bounded string version
+   -------------------------------------------------------------------------
+   procedure Read_Version_File
+     (Source : TZif.Domain.Value_Object.Source_Info.Source_Info_Type;
+      Result : out TZif.Application.Port.Inbound.Get_Version.Version_Result);
+
+   -------------------------------------------------------------------------
+   --  Read_System_Timezone_Id
+   --
+   --  Reads the system's timezone ID from /etc/localtime symlink.
+   --
+   --  Parameters:
+   --    Result : Ok(Zone_Id_Type) or Error(Not_Found, IO_Error)
+   --
+   --  Implementation:
+   --    - Reads /etc/localtime as a symlink
+   --    - Extracts zone ID from target path
+   --    - Returns zone ID like "America/Phoenix"
+   -------------------------------------------------------------------------
+   procedure Read_System_Timezone_Id
+     (Result : out TZif.Application.Port.Inbound.Find_My_Id.Result);
+
+   -------------------------------------------------------------------------
+   --  List_Zones_In_Source
+   --
+   --  Lists all timezone IDs in a source directory, sorted.
+   --
+   --  Parameters:
+   --    Source     : Source info containing the path to scan
+   --    Descending : True for Z-A order, False for A-Z order
+   --    Result     : Ok(Zone_Id_List) or Error
+   --
+   --  Implementation:
+   --    - Recursively scans source directory for TZif files
+   --    - Extracts zone IDs from file paths
+   --    - Sorts alphabetically (ascending or descending)
+   -------------------------------------------------------------------------
+   procedure List_Zones_In_Source
+     (Source     : TZif.Domain.Value_Object.Source_Info.Source_Info_Type;
+      Descending : Boolean;
+      Result     : out TZif.Application.Port.Inbound.List_All_Order_By_Id
+        .List_All_Zones_Result);
 
 end TZif.Infrastructure.IO.Desktop;

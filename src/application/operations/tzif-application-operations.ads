@@ -27,6 +27,12 @@ with TZif.Domain.Error.Result;
 
 with TZif.Application.Port.Inbound.Find_By_Id;
 with TZif.Application.Port.Inbound.Discover_Sources;
+with TZif.Application.Port.Inbound.Get_Transition_At_Epoch;
+with TZif.Application.Port.Inbound.Get_Version;
+with TZif.Application.Port.Inbound.Find_My_Id;
+with TZif.Application.Port.Inbound.List_All_Order_By_Id;
+with TZif.Domain.Value_Object.Epoch_Seconds;
+with TZif.Domain.Value_Object.Source_Info;
 
 package TZif.Application.Operations with
   SPARK_Mode => On
@@ -52,6 +58,38 @@ is
    package Discovery_Result renames
      Inbound_Discover_Sources.Discovery_Result_Package;
    subtype Discovery_Result_Type is Discovery_Result.Result;
+
+   --  Get_Transition_At_Epoch types
+   package Inbound_Get_Transition renames
+     TZif.Application.Port.Inbound.Get_Transition_At_Epoch;
+   subtype Transition_Zone_Id_String is Inbound_Get_Transition.Zone_Id_String;
+   subtype Epoch_Seconds_Type is
+     TZif.Domain.Value_Object.Epoch_Seconds.Epoch_Seconds_Type;
+   package Get_Transition_Result renames
+     Inbound_Get_Transition.Get_Transition_Result_Package;
+   subtype Get_Transition_Result_Type is Get_Transition_Result.Result;
+
+   --  Get_Version types
+   package Inbound_Get_Version renames
+     TZif.Application.Port.Inbound.Get_Version;
+   subtype Version_String_Type is Inbound_Get_Version.Version_String;
+   package Get_Version_Result renames Inbound_Get_Version.Version_Result_Package;
+   subtype Get_Version_Result_Type is Get_Version_Result.Result;
+
+   --  Source_Info type (shared by multiple operations)
+   subtype Source_Info_Type is
+     TZif.Domain.Value_Object.Source_Info.Source_Info_Type;
+
+   --  Find_My_Id types
+   package Inbound_Find_My_Id renames TZif.Application.Port.Inbound.Find_My_Id;
+   package Find_My_Id_Result renames Inbound_Find_My_Id.Result_Zone_Id;
+   subtype Find_My_Id_Result_Type is Find_My_Id_Result.Result;
+
+   --  List_All_Zones types
+   package Inbound_List_All renames
+     TZif.Application.Port.Inbound.List_All_Order_By_Id;
+   package List_All_Result renames Inbound_List_All.List_All_Zones_Result_Package;
+   subtype List_All_Result_Type is List_All_Result.Result;
 
    --  ========================================================================
    --  Generic I/O Plugin Contract
@@ -119,6 +157,30 @@ is
         (Id     :     Zone_Id_Input_Type; Timestamp : out Timestamp_Type;
          Result : out Get_Modified_Time_Result.Result);
 
+      -------------------------------------------------------------------------
+      --  Read version from timezone source
+      --  Reads the +VERSION file from the source path
+      -------------------------------------------------------------------------
+      with procedure Read_Version_File
+        (Source :     Source_Info_Type;
+         Result : out Get_Version_Result.Result);
+
+      -------------------------------------------------------------------------
+      --  Read system timezone identifier
+      --  Reads /etc/localtime symlink and extracts zone ID
+      -------------------------------------------------------------------------
+      with procedure Read_System_Timezone_Id
+        (Result : out Find_My_Id_Result.Result);
+
+      -------------------------------------------------------------------------
+      --  List all zones in a source directory
+      --  Scans directory recursively for TZif files and returns sorted list
+      -------------------------------------------------------------------------
+      with procedure List_Zones_In_Source
+        (Source     :     Source_Info_Type;
+         Descending :     Boolean;
+         Result     : out List_All_Result.Result);
+
    package All_Operations with
      SPARK_Mode => On
    is
@@ -144,11 +206,66 @@ is
          Result       : out Discovery_Result_Type);
 
       ----------------------------------------------------------------------
+      --  Get_Transition_At_Epoch
+      --
+      --  SPARK-friendly procedure-based API:
+      --    - Reads zone file via Read_File I/O plugin
+      --    - Parses TZif data via Domain.Parser
+      --    - Finds transition at specified epoch
+      --    - Returns Transition_Info via Result monad
+      --
+      --  Parameters:
+      --    Id     : Zone identifier (bounded string)
+      --    Epoch  : Unix timestamp to query
+      --    Result : Ok(Transition_Info) or Error
+      ----------------------------------------------------------------------
+      procedure Get_Transition_At_Epoch
+        (Id     :     Transition_Zone_Id_String;
+         Epoch  :     Epoch_Seconds_Type;
+         Result : out Get_Transition_Result_Type);
+
+      ----------------------------------------------------------------------
+      --  Get_Version
+      --
+      --  Returns the IANA database version from the source's +VERSION file.
+      --
+      --  Parameters:
+      --    Source : The timezone data source to query
+      --    Result : Ok(Version_String) or Error
+      ----------------------------------------------------------------------
+      procedure Get_Version
+        (Source :     Source_Info_Type;
+         Result : out Get_Version_Result_Type);
+
+      ----------------------------------------------------------------------
+      --  Find_My_Id
+      --
+      --  Detects the system's local timezone by reading /etc/localtime.
+      --
+      --  Parameters:
+      --    Result : Ok(Zone_Id_Type) or Error (Not_Found, IO_Error)
+      ----------------------------------------------------------------------
+      procedure Find_My_Id (Result : out Find_My_Id_Result_Type);
+
+      ----------------------------------------------------------------------
+      --  List_All_Zones
+      --
+      --  Lists all timezone IDs in a source, sorted by ID.
+      --
+      --  Parameters:
+      --    Source     : The timezone data source to scan
+      --    Descending : True for Z-A order, False for A-Z order
+      --    Result     : Ok(Zone_Id_List) or Error
+      ----------------------------------------------------------------------
+      procedure List_All_Zones
+        (Source     :     Source_Info_Type;
+         Descending :     Boolean;
+         Result     : out List_All_Result_Type);
+
+      ----------------------------------------------------------------------
       --  ROADMAP: Add other I/O-related use cases as needed (roadmap.md):
-      --    - Validate_Source, Load_Source, Get_Version
-      --    - Get_Transition_At_Epoch, List_All_Order_By_Id
+      --    - Validate_Source, Load_Source
       --    - Find_By_Pattern / Find_By_Regex / Find_By_Region
-      --  Note: Simple queries may not need Application layer use cases.
       ----------------------------------------------------------------------
 
    end All_Operations;

@@ -29,49 +29,52 @@ package body TZif.API.Operations is
       end Find_By_Id;
 
       -------------------------------------------------------------------
-      --  Get_Version - ROADMAP: Migrate to All_Operations
+      --  (*) Get_Version - Delegated to All_Operations
       -------------------------------------------------------------------
       function Get_Version
         (Source : TZif.Domain.Value_Object.Source_Info.Source_Info_Type)
          return Version_Result
       is
+         Result : Version_Result;
       begin
-         return TZif.Infrastructure.Adapter.File_System.Repository.Get_Version
-                  (Source);
+         Ops.Get_Version (Source, Result);
+         return Result;
       end Get_Version;
 
       -------------------------------------------------------------------
-      --  Find_My_Id - ROADMAP: Migrate to All_Operations
+      --  (*) Find_My_Id - Delegated to All_Operations
       -------------------------------------------------------------------
       function Find_My_Id return My_Zone_Result is
+         Result : My_Zone_Result;
       begin
-         return TZif.Infrastructure.Adapter.File_System.Repository.Find_My_Id;
+         Ops.Find_My_Id (Result);
+         return Result;
       end Find_My_Id;
 
       -------------------------------------------------------------------
-      --  Get_Transition_At_Epoch - Calls Infrastructure
+      --  (*) Get_Transition_At_Epoch - Delegated to All_Operations
       -------------------------------------------------------------------
       function Get_Transition_At_Epoch
         (Id : Zone_Id_String; Epoch : TZif.Domain.Value_Object.Epoch_Seconds
            .Epoch_Seconds_Type) return Transition_Result
       is
+         Result : Transition_Result;
       begin
-         return TZif.Infrastructure.Adapter.File_System.Repository
-                  .Get_Transition_At_Epoch
-                  (Id, Epoch);
+         Ops.Get_Transition_At_Epoch (Id, Epoch, Result);
+         return Result;
       end Get_Transition_At_Epoch;
 
       -------------------------------------------------------------------
-      --  List_All_Zones - Calls Infrastructure
+      --  (*) List_All_Zones - Delegated to All_Operations
       -------------------------------------------------------------------
       function List_All_Zones
         (Source     : TZif.Domain.Value_Object.Source_Info.Source_Info_Type;
          Descending : Boolean := False) return Zone_List_Result
       is
+         Result : Zone_List_Result;
       begin
-         return TZif.Infrastructure.Adapter.File_System.Repository
-                  .List_All_Zones
-                  (Source, Descending);
+         Ops.List_All_Zones (Source, Descending, Result);
+         return Result;
       end List_All_Zones;
 
       -------------------------------------------------------------------

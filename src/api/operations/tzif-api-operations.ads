@@ -139,9 +139,9 @@ package TZif.API.Operations is
       --  Operations (All 11 API operations)
       --  ====================================================================
       --
-      --  NOTE: Operations marked with (*) delegate to All_Operations.
-      --  ROADMAP: Others call Infrastructure directly until migrated to
-      --  All_Operations (see roadmap.md).
+      --  All operations follow hexagonal architecture:
+      --  API.Facade -> Inbound Port -> UseCase -> Domain/Outbound Ports
+      --
       --  ====================================================================
 
       -------------------------------------------------------------------
@@ -151,27 +151,26 @@ package TZif.API.Operations is
         (Id : Zone_Id_Input_Type) return Find_By_Id_Result_Type;
 
       -------------------------------------------------------------------
-      --  Get_Version - ROADMAP: Migrate to All_Operations (see roadmap.md)
+      --  (*) Get_Version - Delegated to All_Operations
       -------------------------------------------------------------------
       function Get_Version
         (Source : TZif.Domain.Value_Object.Source_Info.Source_Info_Type)
          return Version_Result;
 
       -------------------------------------------------------------------
-      --  Find_My_Id - ROADMAP: Migrate to All_Operations (see roadmap.md)
+      --  (*) Find_My_Id - Delegated to All_Operations
       -------------------------------------------------------------------
       function Find_My_Id return My_Zone_Result;
 
       -------------------------------------------------------------------
-      --  Get_Transition_At_Epoch - Calls Infrastructure directly
-      --  (Simple query, no application layer use case needed)
+      --  (*) Get_Transition_At_Epoch - Delegated to All_Operations
       -------------------------------------------------------------------
       function Get_Transition_At_Epoch
         (Id : Zone_Id_String; Epoch : TZif.Domain.Value_Object.Epoch_Seconds
            .Epoch_Seconds_Type) return Transition_Result;
 
       -------------------------------------------------------------------
-      --  List_All_Zones - ROADMAP: Migrate to All_Operations (roadmap.md)
+      --  (*) List_All_Zones - Delegated to All_Operations
       -------------------------------------------------------------------
       function List_All_Zones
         (Source     : TZif.Domain.Value_Object.Source_Info.Source_Info_Type;
