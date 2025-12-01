@@ -144,13 +144,11 @@ is
          Result       : out Discovery_Result_Type);
 
       ----------------------------------------------------------------------
-      --  TODO: Add other I/O-related use cases as they are migrated:
-      --    - Validate_Source
-      --    - Load_Source
-      --    - Get_Version
-      --    - Get_Transition_At_Epoch
-      --    - List_All_Order_By_Id
+      --  ROADMAP: Add other I/O-related use cases as needed (roadmap.md):
+      --    - Validate_Source, Load_Source, Get_Version
+      --    - Get_Transition_At_Epoch, List_All_Order_By_Id
       --    - Find_By_Pattern / Find_By_Regex / Find_By_Region
+      --  Note: Simple queries may not need Application layer use cases.
       ----------------------------------------------------------------------
 
    end All_Operations;

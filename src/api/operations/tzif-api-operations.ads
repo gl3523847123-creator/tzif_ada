@@ -151,47 +151,51 @@ package TZif.API.Operations is
         (Id : Zone_Id_Input_Type) return Find_By_Id_Result_Type;
 
       -------------------------------------------------------------------
-      --  Get_Version - TODO: Migrate to All_Operations in v1.1.0
+      --  Get_Version - ROADMAP: Migrate to All_Operations (see roadmap.md)
       -------------------------------------------------------------------
       function Get_Version
         (Source : TZif.Domain.Value_Object.Source_Info.Source_Info_Type)
          return Version_Result;
 
       -------------------------------------------------------------------
-      --  Find_My_Id - TODO: Migrate to All_Operations in v1.1.0
+      --  Find_My_Id - ROADMAP: Migrate to All_Operations (see roadmap.md)
       -------------------------------------------------------------------
       function Find_My_Id return My_Zone_Result;
 
       -------------------------------------------------------------------
-      --  Get_Transition_At_Epoch - TODO: Migrate to All_Operations
+      --  Get_Transition_At_Epoch - Calls Infrastructure directly
+      --  (Simple query, no application layer use case needed)
       -------------------------------------------------------------------
       function Get_Transition_At_Epoch
         (Id : Zone_Id_String; Epoch : TZif.Domain.Value_Object.Epoch_Seconds
            .Epoch_Seconds_Type) return Transition_Result;
 
       -------------------------------------------------------------------
-      --  List_All_Zones - TODO: Migrate to All_Operations in v1.1.0
+      --  List_All_Zones - ROADMAP: Migrate to All_Operations (roadmap.md)
       -------------------------------------------------------------------
       function List_All_Zones
         (Source     : TZif.Domain.Value_Object.Source_Info.Source_Info_Type;
          Descending : Boolean := False) return Zone_List_Result;
 
       -------------------------------------------------------------------
-      --  Find_By_Pattern - TODO: Migrate to All_Operations in v1.1.0
+      --  Find_By_Pattern - Calls Infrastructure directly
+      --  (Simple query, no application layer use case needed)
       -------------------------------------------------------------------
       function Find_By_Pattern
         (Pattern : Pattern_String; Yield : Pattern_Callback)
          return Pattern_Result;
 
       -------------------------------------------------------------------
-      --  Find_By_Region - TODO: Migrate to All_Operations in v1.1.0
+      --  Find_By_Region - Calls Infrastructure directly
+      --  (Simple query, no application layer use case needed)
       -------------------------------------------------------------------
       function Find_By_Region
         (Region : Region_String; Yield : Region_Callback)
          return Region_Result;
 
       -------------------------------------------------------------------
-      --  Find_By_Regex - TODO: Migrate to All_Operations in v1.1.0
+      --  Find_By_Regex - Calls Infrastructure directly
+      --  (Simple query, no application layer use case needed)
       -------------------------------------------------------------------
       function Find_By_Regex
         (Regex : Regex_String; Yield : Regex_Callback) return Regex_Result;
@@ -203,13 +207,14 @@ package TZif.API.Operations is
         (Search_Paths : Discover_Path_List_Type) return Discovery_Result_Type;
 
       -------------------------------------------------------------------
-      --  Load_Source - TODO: Migrate to All_Operations in v1.1.0
+      --  Load_Source - ROADMAP: Migrate to All_Operations (see roadmap.md)
       -------------------------------------------------------------------
       function Load_Source
         (Path : Load_Path_String) return Load_Source_Result;
 
       -------------------------------------------------------------------
-      --  Validate_Source - TODO: Migrate to All_Operations in v1.1.0
+      --  Validate_Source - Calls Infrastructure directly
+      --  (Simple validation, no application layer use case needed)
       -------------------------------------------------------------------
       function Validate_Source
         (Path : Validate_Path_String) return Validation_Result;

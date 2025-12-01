@@ -23,7 +23,7 @@ package body TZif.Infrastructure.Platform.Windows is
    function Read_Symbolic_Link (Path : String) return Platform_String_Result is
       pragma Unreferenced (Path);
    begin
-      --  TODO: Implement Windows timezone detection
+      --  ROADMAP: Implement Windows timezone detection (see roadmap.md)
       --
       --  Implementation strategy:
       --

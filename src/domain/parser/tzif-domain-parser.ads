@@ -91,7 +91,7 @@ is
       Result : out Parse_Result_Type) with
      SPARK_Mode => On, Pre => Length <= Bytes'Length and then Length > 0,
      Post       => True;
-   --  TODO: Strengthen postconditions:
+   --  ROADMAP: Strengthen postconditions (see roadmap.md):
    --    If Result.Is_Ok then Result.Value is valid TZif_Data_Type
    --    If Result.Is_Error then Result.Error explains parse failure
 

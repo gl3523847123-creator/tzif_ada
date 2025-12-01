@@ -29,7 +29,7 @@ package body TZif.API.Operations is
       end Find_By_Id;
 
       -------------------------------------------------------------------
-      --  Get_Version - Calls Infrastructure (TODO: migrate to All_Ops)
+      --  Get_Version - ROADMAP: Migrate to All_Operations
       -------------------------------------------------------------------
       function Get_Version
         (Source : TZif.Domain.Value_Object.Source_Info.Source_Info_Type)
@@ -41,7 +41,7 @@ package body TZif.API.Operations is
       end Get_Version;
 
       -------------------------------------------------------------------
-      --  Find_My_Id - Calls Infrastructure (TODO: migrate to All_Ops)
+      --  Find_My_Id - ROADMAP: Migrate to All_Operations
       -------------------------------------------------------------------
       function Find_My_Id return My_Zone_Result is
       begin

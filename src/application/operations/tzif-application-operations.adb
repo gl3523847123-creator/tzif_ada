@@ -24,7 +24,7 @@ is
 
       use TZif.Domain.Error.Error_Strings;
 
-      --  Formal parameters wired but not yet used in stub implementations
+      --  Get_Modified_Time is a dropped feature (see roadmap.md)
       pragma Unreferenced (Get_Modified_Time);
 
       ----------------------------------------------------------------------
