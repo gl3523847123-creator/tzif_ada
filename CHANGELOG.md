@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Style**: Fixed `TZif` casing in tzif-version.ads to match root package declaration
+  - Changed `package Tzif.Version` to `package TZif.Version`
+  - Eliminates `-gnatyr` style warnings about identifier casing
+
 ## [1.0.0] - 2025-11-29
 
 ### Added
