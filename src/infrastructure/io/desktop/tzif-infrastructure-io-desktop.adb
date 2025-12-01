@@ -558,12 +558,8 @@ is
                Zone_Id_Str   : constant String   :=
                  Link_Target (Zone_Id_Start .. Link_Target'Last);
             begin
-               declare
-                  use TZif.Domain.Value_Object.Zone_Id;
-               begin
-                  Result :=
-                    Find_My_Id.Result_Zone_Id.Ok (Make_Zone_Id (Zone_Id_Str));
-               end;
+               Result :=
+                 Find_My_Id.Result_Zone_Id.Ok (Make_Zone_Id (Zone_Id_Str));
             end;
          end;
       end;

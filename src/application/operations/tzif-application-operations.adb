@@ -152,7 +152,8 @@ is
          --  Convert bounded string to Zone_Id_Type for Read_File
          Zone_Id_Str : constant String :=
            Inbound_Get_Transition.Zone_Id_Strings.To_String (Id);
-         Zone_Id_Val : constant Zone_Id_Input_Type := Make_Zone_Id (Zone_Id_Str);
+         Zone_Id_Val : constant Zone_Id_Input_Type :=
+           Make_Zone_Id (Zone_Id_Str);
 
          --  Local buffer for TZif bytes (same as Find_By_Id)
          Buffer : Byte_Array (1 .. 65_536);

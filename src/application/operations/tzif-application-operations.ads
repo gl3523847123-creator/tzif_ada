@@ -78,7 +78,8 @@ is
    package Inbound_Get_Version renames
      TZif.Application.Port.Inbound.Get_Version;
    subtype Version_String_Type is Inbound_Get_Version.Version_String;
-   package Get_Version_Result renames Inbound_Get_Version.Version_Result_Package;
+   package Get_Version_Result renames
+     Inbound_Get_Version.Version_Result_Package;
    subtype Get_Version_Result_Type is Get_Version_Result.Result;
 
    --  Source_Info type (shared by multiple operations)
@@ -93,14 +94,16 @@ is
    --  List_All_Zones types
    package Inbound_List_All renames
      TZif.Application.Port.Inbound.List_All_Order_By_Id;
-   package List_All_Result renames Inbound_List_All.List_All_Zones_Result_Package;
+   package List_All_Result renames
+     Inbound_List_All.List_All_Zones_Result_Package;
    subtype List_All_Result_Type is List_All_Result.Result;
 
    --  Load_Source types
    package Inbound_Load_Source renames
      TZif.Application.Port.Inbound.Load_Source;
    subtype Load_Path_String is Inbound_Load_Source.Path_String;
-   package Load_Source_Result renames Inbound_Load_Source.Load_Source_Result_Package;
+   package Load_Source_Result renames
+     Inbound_Load_Source.Load_Source_Result_Package;
    subtype Load_Source_Result_Type is Load_Source_Result.Result;
 
    --  Validate_Source types
@@ -115,7 +118,8 @@ is
    package Inbound_Find_By_Pattern renames
      TZif.Application.Port.Inbound.Find_By_Pattern;
    subtype Pattern_String_Type is Inbound_Find_By_Pattern.Pattern_String;
-   subtype Pattern_Callback_Type is Inbound_Find_By_Pattern.Yield_Callback_Access;
+   subtype Pattern_Callback_Type is
+     Inbound_Find_By_Pattern.Yield_Callback_Access;
    package Find_By_Pattern_Result renames
      Inbound_Find_By_Pattern.Find_By_Pattern_Result_Package;
    subtype Find_By_Pattern_Result_Type is Find_By_Pattern_Result.Result;
@@ -124,7 +128,8 @@ is
    package Inbound_Find_By_Region renames
      TZif.Application.Port.Inbound.Find_By_Region;
    subtype Region_String_Type is Inbound_Find_By_Region.Region_String;
-   subtype Region_Callback_Type is Inbound_Find_By_Region.Yield_Callback_Access;
+   subtype Region_Callback_Type is
+     Inbound_Find_By_Region.Yield_Callback_Access;
    package Find_By_Region_Result renames
      Inbound_Find_By_Region.Find_By_Region_Result_Package;
    subtype Find_By_Region_Result_Type is Find_By_Region_Result.Result;
@@ -374,7 +379,8 @@ is
       --    Result : Ok(Boolean) or Error (IO_Error)
       ----------------------------------------------------------------------
       procedure Validate_Source
-        (Path : Validate_Path_String; Result : out Validate_Source_Result_Type);
+        (Path   :     Validate_Path_String;
+         Result : out Validate_Source_Result_Type);
 
       ----------------------------------------------------------------------
       --  Find_By_Pattern
