@@ -460,10 +460,14 @@ is
 
          SIO.Close (File);
 
-         Result :=
-           Get_Version.Version_Result_Package.Ok
-             (Get_Version.Version_Strings.To_Bounded_String
-                (Ada.Strings.Fixed.Trim (Buffer (1 .. Len), Ada.Strings.Both)));
+         declare
+            Trimmed : constant String :=
+              Ada.Strings.Fixed.Trim (Buffer (1 .. Len), Ada.Strings.Both);
+         begin
+            Result :=
+              Get_Version.Version_Result_Package.Ok
+                (Get_Version.Version_Strings.To_Bounded_String (Trimmed));
+         end;
 
       exception
          when E : others =>
@@ -516,7 +520,8 @@ is
          then
             Result :=
               Find_My_Id.Result_Zone_Id.Error
-                (TZif.Domain.Error.IO_Error, "/etc/localtime is not a symlink");
+                (TZif.Domain.Error.IO_Error,
+                 "/etc/localtime is not a symlink");
             return;
          end if;
 
@@ -553,9 +558,12 @@ is
                Zone_Id_Str   : constant String   :=
                  Link_Target (Zone_Id_Start .. Link_Target'Last);
             begin
-               Result :=
-                 Find_My_Id.Result_Zone_Id.Ok
-                   (TZif.Domain.Value_Object.Zone_Id.Make_Zone_Id (Zone_Id_Str));
+               declare
+                  use TZif.Domain.Value_Object.Zone_Id;
+               begin
+                  Result :=
+                    Find_My_Id.Result_Zone_Id.Ok (Make_Zone_Id (Zone_Id_Str));
+               end;
             end;
          end;
       end;
@@ -687,7 +695,8 @@ is
    ----------------------------------------------------------------------
    procedure Load_Source_From_Path
      (Path   : TZif.Application.Port.Inbound.Load_Source.Path_String;
-      Result : out TZif.Application.Port.Inbound.Load_Source.Load_Source_Result)
+      Result : out TZif.Application.Port.Inbound.Load_Source
+        .Load_Source_Result)
    is
       use Ada.Directories;
       use Ada.Exceptions;
@@ -778,7 +787,8 @@ is
                   end loop;
                   End_Search (S);
                exception
-                  when Ada.Directories.Name_Error | Ada.Directories.Use_Error =>
+                  when Ada.Directories.Name_Error
+                     | Ada.Directories.Use_Error =>
                      null;
                end Count_Recursive;
 
@@ -818,7 +828,8 @@ is
    ----------------------------------------------------------------------
    procedure Validate_Source_Path
      (Path   : TZif.Application.Port.Inbound.Validate_Source.Path_String;
-      Result : out TZif.Application.Port.Inbound.Validate_Source.Validation_Result)
+      Result : out TZif.Application.Port.Inbound.Validate_Source
+        .Validation_Result)
    is
       use Ada.Directories;
       use Ada.Exceptions;
@@ -1056,14 +1067,16 @@ is
    ----------------------------------------------------------------------
    procedure Find_Zones_By_Regex
      (Regex  : TZif.Application.Port.Inbound.Find_By_Regex.Regex_String;
-      Yield  : TZif.Application.Port.Inbound.Find_By_Regex.Yield_Callback_Access;
+      Yield  : TZif.Application.Port.Inbound.Find_By_Regex
+        .Yield_Callback_Access;
       Result : out TZif.Application.Port.Inbound.Find_By_Regex
         .Find_By_Regex_Result)
    is
       use Ada.Directories;
       use Ada.Exceptions;
       use GNAT.Regpat;
-      package Find_By_Regex renames TZif.Application.Port.Inbound.Find_By_Regex;
+      package Find_By_Regex renames
+        TZif.Application.Port.Inbound.Find_By_Regex;
 
       Regex_Str : constant String :=
         Find_By_Regex.Regex_Strings.To_String (Regex);

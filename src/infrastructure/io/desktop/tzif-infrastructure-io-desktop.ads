@@ -213,7 +213,7 @@ is
    --
    --  Parameters:
    --    Path   : Filesystem path to timezone database source
-   --    Result : Ok(Source_Info) or Error (Not_Found, Validation_Error, IO_Error)
+   --    Result : Ok(Source_Info) or Error (Not_Found, IO_Error)
    --
    --  Implementation:
    --    - Validates path exists and is directory
@@ -223,7 +223,8 @@ is
    -------------------------------------------------------------------------
    procedure Load_Source_From_Path
      (Path   : TZif.Application.Port.Inbound.Load_Source.Path_String;
-      Result : out TZif.Application.Port.Inbound.Load_Source.Load_Source_Result);
+      Result : out TZif.Application.Port.Inbound.Load_Source
+        .Load_Source_Result);
 
    -------------------------------------------------------------------------
    --  Validate_Source_Path
@@ -290,7 +291,8 @@ is
    -------------------------------------------------------------------------
    procedure Find_Zones_By_Regex
      (Regex  : TZif.Application.Port.Inbound.Find_By_Regex.Regex_String;
-      Yield  : TZif.Application.Port.Inbound.Find_By_Regex.Yield_Callback_Access;
+      Yield  : TZif.Application.Port.Inbound.Find_By_Regex
+        .Yield_Callback_Access;
       Result : out TZif.Application.Port.Inbound.Find_By_Regex
         .Find_By_Regex_Result);
 
