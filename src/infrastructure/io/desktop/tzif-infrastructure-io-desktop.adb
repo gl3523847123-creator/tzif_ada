@@ -220,7 +220,7 @@ is
          Search : Search_Type;
          Item   : Directory_Entry_Type;
       begin
-         Start_Search (Search, Dir_Path, "*", (others => True));
+         Start_Search (Search, Dir_Path, "*", [others => True]);
 
          while More_Entries (Search) loop
             Get_Next_Entry (Search, Item);

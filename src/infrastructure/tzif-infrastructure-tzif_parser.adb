@@ -17,6 +17,7 @@ pragma Ada_2022;
 
 with Ada.Exceptions;
 with Ada.Streams;
+with Interfaces;
 with TZif.Domain.Error;
 with TZif.Domain.Parser;
 
@@ -102,8 +103,7 @@ package body TZif.Infrastructure.TZif_Parser is
             for I in Chunk'First .. Last loop
                if Total_Read < Max_Size then
                   Total_Read          := Total_Read + 1;
-                  Buffer (Total_Read) :=
-                    TZif.Domain.Parser.Byte_Array'Component_Type (Chunk (I));
+                  Buffer (Total_Read) := Interfaces.Unsigned_8 (Chunk (I));
                end if;
             end loop;
 
