@@ -147,7 +147,7 @@ package body TZif.API.Operations is
       end Validate_Source;
 
       -------------------------------------------------------------------
-      --  NOTE: Deferred to post-1.0 pending user demand (see roadmap.md)
+      --  ROADMAP: Deferred pending user demand (see roadmap.md)
       -------------------------------------------------------------------
       --  (*) Import_Cache - Delegated to All_Operations
       -------------------------------------------------------------------

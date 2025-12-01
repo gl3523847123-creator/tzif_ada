@@ -138,7 +138,7 @@ package body TZif.API is
    end Validate_Source;
 
    --  ========================================================================
-   --  NOTE: Deferred to post-1.0 pending user demand (see roadmap.md)
+   --  ROADMAP: Deferred pending user demand (see roadmap.md)
    --  ========================================================================
    --  Cache Management - Import and export timezone data caches
    --  ========================================================================

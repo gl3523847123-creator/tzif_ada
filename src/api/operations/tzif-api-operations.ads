@@ -65,7 +65,7 @@ package TZif.API.Operations is
         TZif.Application.Operations.Discovery_Result_Type;
 
       --  ====================================================================
-      --  NOTE: Deferred to post-1.0 pending user demand (see roadmap.md)
+      --  ROADMAP: Deferred pending user demand (see roadmap.md)
       --  ====================================================================
       --  Import/Export Cache types
       --  subtype Import_Path_String is
@@ -140,8 +140,8 @@ package TZif.API.Operations is
       --  ====================================================================
       --
       --  NOTE: Operations marked with (*) delegate to All_Operations.
-      --  Others call Infrastructure directly until migrated to All_Operations
-      --  in v1.1.0 (see roadmap.md).
+      --  ROADMAP: Others call Infrastructure directly until migrated to
+      --  All_Operations (see roadmap.md).
       --  ====================================================================
 
       -------------------------------------------------------------------
@@ -220,7 +220,7 @@ package TZif.API.Operations is
         (Path : Validate_Path_String) return Validation_Result;
 
       -------------------------------------------------------------------
-      --  NOTE: Deferred to post-1.0 pending user demand (see roadmap.md)
+      --  ROADMAP: Deferred pending user demand (see roadmap.md)
       -------------------------------------------------------------------
       --  (*) Import_Cache - Delegated to All_Operations
       -------------------------------------------------------------------

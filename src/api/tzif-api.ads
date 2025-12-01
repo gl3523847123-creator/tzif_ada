@@ -35,7 +35,7 @@ with TZif.Application.Port.Inbound.List_All_Order_By_Id;
 with TZif.Application.Port.Inbound.Discover_Sources;
 with TZif.Application.Port.Inbound.Load_Source;
 with TZif.Application.Port.Inbound.Validate_Source;
---  NOTE: Deferred to post-1.0 pending user demand (see roadmap.md)
+--  ROADMAP: Deferred pending user demand (see roadmap.md)
 --  with TZif.Application.Port.Inbound.Import_Cache;
 --  with TZif.Application.Port.Inbound.Export_Cache;
 
@@ -249,7 +249,7 @@ package TZif.API is
      (Path : Validate_Path_String) return Validation_Result;
 
    --  ========================================================================
-   --  NOTE: Deferred to post-1.0 pending user demand (see roadmap.md)
+   --  ROADMAP: Deferred pending user demand (see roadmap.md)
    --  ========================================================================
    --  Cache Management - Import and export timezone data caches
    --  ========================================================================
