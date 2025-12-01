@@ -88,6 +88,14 @@ compiled timezone information (TZif format, RFC 9636).
 - Build profile support (standard, embedded, concurrent, baremetal, STM32)
 - Python-based release automation scripts
 
+### Fixed
+
+#### Architecture Compliance
+- Domain layer now has ZERO external crate dependencies (hexagonal architecture)
+- Clone `TZif.Domain.Option` from `Functional.Option` for Domain-local use
+- arch_guard now detects and reports Domain external dependency violations
+- Added 14 Python tests for domain external dependency validation
+
 ### Dependencies
 - `functional` ^2.1.1 (Result/Option/Try monads)
 - `gnatcoll` ^25.0.0 (GNAT Components Collection)
