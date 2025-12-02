@@ -1,0 +1,6 @@
+# Release configuration for tzif
+# This file contains project-specific settings for the release script.
+
+# Ada package name override (for acronyms with special casing)
+# Default: auto-generated from alire.toml name using capitalize()
+ada-package-name = "TZif"
