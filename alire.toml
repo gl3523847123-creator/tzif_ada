@@ -1,4 +1,5 @@
 name = "tzif"
+ada-package-name = "TZif"
 description = "Parsing and querying of IANA's compiled timezone information"
 version = "1.0.0"
 authors = ["Michael Gardner"]
