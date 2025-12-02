@@ -1,7 +1,7 @@
 # Software Design Specification (SDS)
 
 **Version:** 1.0.0<br>
-**Date:** 2025-11-29<br>
+**Date:** 2025-12-02<br>
 **SPDX-License-Identifier:** BSD-3-Clause<br>
 **License File:** See the LICENSE file in the project root<br>
 **Copyright:** © 2025 Michael Gardner, A Bit of Help, Inc.<br>
@@ -415,7 +415,7 @@ TZif.API
 
 **Document Control**:
 - Version: 1.0.0
-- Last Updated: 2025-11-29
+- Last Updated: 2025-12-02
 - Status: Released
 - Copyright © 2025 Michael Gardner, A Bit of Help, Inc.
 - License: BSD-3-Clause

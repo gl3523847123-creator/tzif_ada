@@ -1,7 +1,7 @@
 # Software Requirements Specification (SRS)
 
 **Version:** 1.0.0<br>
-**Date:** 2025-11-29<br>
+**Date:** 2025-12-02<br>
 **SPDX-License-Identifier:** BSD-3-Clause<br>
 **License File:** See the LICENSE file in the project root<br>
 **Copyright:** © 2025 Michael Gardner, A Bit of Help, Inc.<br>
@@ -274,8 +274,8 @@ The TZif API provides 11 operations:
 
 | Test Type | Count |
 |-----------|-------|
-| Unit tests | 126 |
-| Integration test files | 16 |
+| Unit tests | 200 |
+| Integration tests | 116 |
 | Example programs | 11 |
 
 ### 7.2 Verification Methods
@@ -311,13 +311,13 @@ TZif (Timezone Information Format) is a binary format defined by IANA for storin
 | Ada implementation files | ~26 |
 | Architecture layers | Domain, Application, Infrastructure, API |
 | Examples | 11 |
-| Unit tests | 126 |
+| Unit tests | 200 |
 
 ---
 
 **Document Control**:
 - Version: 1.0.0
-- Last Updated: 2025-11-29
+- Last Updated: 2025-12-02
 - Status: Released
 - Copyright © 2025 Michael Gardner, A Bit of Help, Inc.
 - License: BSD-3-Clause

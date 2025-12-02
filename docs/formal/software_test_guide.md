@@ -1,7 +1,7 @@
 # Software Test Guide
 
 **Version:** 1.0.0<br>
-**Date:** 2025-11-29<br>
+**Date:** 2025-12-02<br>
 **SPDX-License-Identifier:** BSD-3-Clause<br>
 **License File:** See the LICENSE file in the project root<br>
 **Copyright:** © 2025 Michael Gardner, A Bit of Help, Inc.<br>
@@ -33,13 +33,13 @@ This document covers:
 **Unit Tests**:
 - Test individual packages in isolation
 - Focus on domain value objects and services
-- Count: 126 tests
+- Count: 200 tests
 
 **Integration Tests**:
 - Test full stack with real TZif data
 - Test use cases end-to-end
 - Test error conditions and edge cases
-- Count: 16 test files
+- Count: 116 tests
 
 **Examples as Tests**:
 - Working examples that demonstrate usage
@@ -138,14 +138,14 @@ make test-integration
 ========================================
         GRAND TOTAL - ALL UNIT TESTS
 ========================================
-Total tests:   126
-Passed:        126
+Total tests:   200
+Passed:        200
 Failed:        0
 
 ########################################
 ###                                  ###
 ###    UNIT TESTS: SUCCESS
-###    All  126 tests passed!
+###    All  200 tests passed!
 ###                                  ###
 ########################################
 ```
@@ -364,9 +364,9 @@ steps:
 
 All must pass:
 - Zero build warnings
-- All unit tests pass (126 tests)
-- All integration tests pass
-- All examples execute successfully
+- All unit tests pass (200 tests)
+- All integration tests pass (116 tests)
+- All examples execute successfully (11 examples)
 
 ---
 
@@ -376,10 +376,10 @@ All must pass:
 
 | Category | Count |
 |----------|-------|
-| Unit tests | 126 |
-| Integration test files | 16 |
+| Unit tests | 200 |
+| Integration tests | 116 |
 | Example programs | 11 |
-| **Total test assets** | **153** |
+| **Total test assets** | **327** |
 
 ### 11.2 Test Commands Reference
 
@@ -396,7 +396,7 @@ make clean-coverage    # Remove coverage data
 
 **Document Control**:
 - Version: 1.0.0
-- Last Updated: 2025-11-29
+- Last Updated: 2025-12-02
 - Status: Released
 - Copyright © 2025 Michael Gardner, A Bit of Help, Inc.
 - License: BSD-3-Clause

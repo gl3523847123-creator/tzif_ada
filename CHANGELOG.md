@@ -68,7 +68,7 @@ compiled timezone information (TZif format, RFC 9636).
 - Windows: Not supported (see roadmap.md for future plans)
 
 #### Testing
-- 126 tests total (11 examples + 116 integration/unit)
+- 327 tests total (200 unit + 116 integration + 11 examples)
 - TZif parser error handling tests (29 cases)
 - Zone repository tests (14 cases)
 - IANA releases metadata lookup tests
