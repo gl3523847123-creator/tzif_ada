@@ -5,7 +5,7 @@ pragma Style_Checks (Off);
 package Tzif_Config is
    pragma Pure;
 
-   Crate_Version : constant String := "1.0.1";
+   Crate_Version : constant String := "1.0.0";
    Crate_Name : constant String := "tzif";
 
    Alire_Host_OS : constant String := "macos";

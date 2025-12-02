@@ -5,7 +5,7 @@ with "gnatcoll_core.gpr";
 with "gnatcoll_minimal.gpr";
 with "gnatcoll_projects.gpr";
 abstract project Tzif_Config is
-   Crate_Version := "1.0.1";
+   Crate_Version := "1.0.0";
    Crate_Name := "tzif";
 
    Alire_Host_OS := "macos";
