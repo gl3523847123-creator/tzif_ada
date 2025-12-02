@@ -1,6 +1,6 @@
 # Changelog
 
-**Version:** 1.0.1  
+**Version:** 1.0.0  
 **Date:** December 02, 2025  
 **SPDX-License-Identifier:** BSD-3-Clause<br>
 **License File:** See the LICENSE file in the project root<br>
@@ -14,24 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-
-### Added
-
-### Removed
-
-### Fixed
-
----
-
-## [1.0.1] - 2025-12-02
-
-### Fixed
-
-- **Alire deployment**: Add `export-ignore` for submodules (`scripts/python`, `test/python`, `docs/common`) to prevent path collisions with dependencies during Alire source archive creation
-
-
-## [1.0.0] - 2025-11-30
+## [1.0.0] - 2025-12-02
 
 ### Overview
 Initial release of TZif, an Ada 2022 library for parsing and querying IANA's
@@ -78,6 +61,7 @@ compiled timezone information (TZif format, RFC 9636).
 - Thin Infrastructure wrapper for file system operations
 - Library_Standalone mode with explicit Library_Interface
 - Result monad error handling via `functional` crate
+- Submodule `export-ignore` for clean Alire deployment
 
 #### Platform Support
 - Full support: Linux, macOS, FreeBSD, NetBSD, OpenBSD
