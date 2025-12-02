@@ -25,7 +25,7 @@ Welcome to the documentation for **Tzif**, a canonical Ada 2022 library demonstr
 ### Getting Started
 
 - **[Quick Start Guide](quick_start.md)** - Get up and running in minutes
-- **[Build Profiles](guides/build_profiles.md)** - Profile configuration for different targets
+- **[Build Profiles](common/guides/build_profiles.md)** - Profile configuration for different targets
 
 ### Formal Documentation
 
@@ -35,7 +35,9 @@ Welcome to the documentation for **Tzif**, a canonical Ada 2022 library demonstr
 
 ### Developer Guides
 
-- **[All About Our API](guides/all_about_our_api.md)** - API layer architecture and usage
+- **[All About Our API](common/guides/all_about_our_api.md)** - API layer architecture and usage
+- **[Architecture Enforcement](common/guides/architecture_enforcement.md)** - Hexagonal architecture rules
+- **[Error Handling Strategy](common/guides/error_handling_strategy.md)** - Result monad patterns
 
 ### Reference
 
@@ -128,7 +130,7 @@ end Main;
 - **SHOULD** - Recommended but not required
 - **MAY** - Optional feature
 - **Code blocks** - Can be copied and executed
-- **Diagrams** - PlantUML source in `docs/diagrams/`
+- **Diagrams** - PlantUML source in `docs/common/diagrams/`
 
 ---
 
@@ -146,4 +148,4 @@ Documentation follows the standards defined in the [Documentation Agent](~/.clau
 
 - Check the [Quick Start Guide](quick_start.md) for common issues
 - Review the [Software Test Guide](formal/software_test_guide.md) for testing help
-- See [All About Our API](guides/all_about_our_api.md) for API architecture details
+- See [All About Our API](common/guides/all_about_our_api.md) for API architecture details
