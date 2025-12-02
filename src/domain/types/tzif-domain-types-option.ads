@@ -1,6 +1,6 @@
 pragma Ada_2022;
 --  ===========================================================================
---  TZif.Domain.Option
+--  TZif.Domain.Types.Option
 --  ===========================================================================
 --  Copyright (c) 2025 Michael Gardner, A Bit of Help, Inc.
 --  SPDX-License-Identifier: BSD-3-Clause
@@ -23,7 +23,7 @@ pragma Ada_2022;
 
 generic
    type T is private;
-package TZif.Domain.Option with
+package TZif.Domain.Types.Option with
   Preelaborate
 is
 
@@ -112,4 +112,4 @@ is
    --  Aliases for discoverability (Result-style naming)
    function Fallback (A, B : Option) return Option renames Or_Else;
 
-end TZif.Domain.Option;
+end TZif.Domain.Types.Option;

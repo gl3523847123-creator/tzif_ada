@@ -15,13 +15,13 @@ pragma Unevaluated_Use_Of_Old (Allow);
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Command_Line;
 with Test_Framework;
-with TZif.Domain.Bounded_Vector;
+with TZif.Domain.Types.Bounded_Vector;
 
 procedure Test_Bounded_Vector is
 
    --  Instantiate bounded vector with Integer elements and small capacity
    --  Small capacity (5) makes it easy to test boundary conditions
-   package Int_Vectors is new TZif.Domain.Bounded_Vector
+   package Int_Vectors is new TZif.Domain.Types.Bounded_Vector
      (Element_Type => Integer, Capacity => 5);
 
    use Int_Vectors;

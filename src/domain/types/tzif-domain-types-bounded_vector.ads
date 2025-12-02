@@ -1,7 +1,7 @@
 pragma Ada_2022;
 pragma Unevaluated_Use_Of_Old (Allow);
 --  ===========================================================================
---  TZif.Domain.Bounded_Vector
+--  TZif.Domain.Types.Bounded_Vector
 --  ===========================================================================
 --  Copyright (c) 2025 Michael Gardner, A Bit of Help, Inc.
 --  SPDX-License-Identifier: BSD-3-Clause
@@ -26,7 +26,7 @@ pragma Unevaluated_Use_Of_Old (Allow);
 --    Error_Kind      - Enumeration of possible error conditions
 --
 --  Usage:
---    package Transition_Vectors is new TZif.Domain.Bounded_Vector
+--    package Transition_Vectors is new TZif.Domain.Types.Bounded_Vector
 --      (Element_Type => Transition_Type, Capacity => 2000);
 --
 --    V : Transition_Vectors.Vector := Transition_Vectors.Empty_Vector;
@@ -47,7 +47,7 @@ pragma Unevaluated_Use_Of_Old (Allow);
 generic
    type Element_Type is private;
    Capacity : Positive;
-package TZif.Domain.Bounded_Vector with
+package TZif.Domain.Types.Bounded_Vector with
   SPARK_Mode => On,
   Pure
 is
@@ -316,4 +316,4 @@ private
    end record with
      Type_Invariant => Last <= Capacity;
 
-end TZif.Domain.Bounded_Vector;
+end TZif.Domain.Types.Bounded_Vector;

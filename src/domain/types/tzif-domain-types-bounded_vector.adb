@@ -1,12 +1,12 @@
 pragma Ada_2022;
 --  ===========================================================================
---  TZif.Domain.Bounded_Vector (Body)
+--  TZif.Domain.Types.Bounded_Vector (Body)
 --  ===========================================================================
 --  Copyright (c) 2025 Michael Gardner, A Bit of Help, Inc.
 --  SPDX-License-Identifier: BSD-3-Clause
 --  ===========================================================================
 
-package body TZif.Domain.Bounded_Vector with
+package body TZif.Domain.Types.Bounded_Vector with
   SPARK_Mode => On
 is
 
@@ -161,4 +161,4 @@ is
       V.Data (Index) := E;
    end Unchecked_Replace;
 
-end TZif.Domain.Bounded_Vector;
+end TZif.Domain.Types.Bounded_Vector;

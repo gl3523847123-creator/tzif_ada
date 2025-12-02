@@ -1,6 +1,6 @@
 pragma Ada_2022;
 --  ===========================================================================
---  TZif.Domain.Option
+--  TZif.Domain.Types.Option
 --  ===========================================================================
 --  Copyright (c) 2025 Michael Gardner, A Bit of Help, Inc.
 --  SPDX-License-Identifier: BSD-3-Clause
@@ -10,7 +10,7 @@ pragma Ada_2022;
 --
 --  ===========================================================================
 
-package body TZif.Domain.Option is
+package body TZif.Domain.Types.Option is
 
    --  Constructors
    function New_Some (V : T) return Option
@@ -115,4 +115,4 @@ package body TZif.Domain.Option is
       end case;
    end Or_Else_With;
 
-end TZif.Domain.Option;
+end TZif.Domain.Types.Option;
