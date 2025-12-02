@@ -2,7 +2,7 @@
 #ifndef TZIF_CONFIG_H
 #define TZIF_CONFIG_H
 
-#define CRATE_VERSION "1.0.0"
+#define CRATE_VERSION "1.0.1"
 #define CRATE_NAME "tzif"
 
 #define ALIRE_HOST_OS "macos"
