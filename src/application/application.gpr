@@ -12,7 +12,7 @@
 -- Publishable: NO - Application-specific
 -- ===========================================================================
 
-with "../../shared_config.gpr";
+with "../../tzif_shared_config.gpr";
 
 library project Application is
 
@@ -99,8 +99,8 @@ library project Application is
       "Application.Usecase.Load_Source",
       "Application.Usecase.Validate_Source");
 
-   package Compiler renames Shared_Config.Compiler;
-   package Binder renames Shared_Config.Binder;
-   package Builder renames Shared_Config.Builder;
+   package Compiler renames TZif_Shared_Config.Compiler;
+   package Binder renames TZif_Shared_Config.Binder;
+   package Builder renames TZif_Shared_Config.Builder;
 
 end Application;

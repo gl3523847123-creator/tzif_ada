@@ -14,7 +14,7 @@
 -- Publishable: YES - The library crate
 -- ===========================================================================
 
-with "shared_config.gpr";
+with "tzif_shared_config.gpr";
 with "functional.gpr";
 with "config/tzif_config.gpr";
 
@@ -135,11 +135,11 @@ library project Tzif is
    -- Package References: Inherit from Shared_Config
    -- ==========================================================================
 
-   package Compiler renames Shared_Config.Compiler;
-   package Binder renames Shared_Config.Binder;
-   package Builder renames Shared_Config.Builder;
-   package Format renames Shared_Config.Format;
-   package Documentation renames Shared_Config.Documentation;
+   package Compiler renames TZif_Shared_Config.Compiler;
+   package Binder renames TZif_Shared_Config.Binder;
+   package Builder renames TZif_Shared_Config.Builder;
+   package Format renames TZif_Shared_Config.Format;
+   package Documentation renames TZif_Shared_Config.Documentation;
 
    package Install is
       for Artifacts (".") use ("share");
