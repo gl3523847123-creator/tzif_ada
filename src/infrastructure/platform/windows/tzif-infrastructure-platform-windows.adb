@@ -37,7 +37,7 @@ package body TZif.Infrastructure.Platform.Windows is
    --  ========================================================================
 
    subtype WORD is unsigned_short;
-   subtype LONG is long;
+   subtype LONG is Interfaces.C.long;
    subtype DWORD is unsigned_long;
    subtype WCHAR is wchar_t;
 

@@ -65,13 +65,22 @@ procedure Test_TZif_Data is
             (Abbreviation_Options.Value (Opt)) = Expected;
    end Abbrev_Equals;
 
+   --  Helper: Check if Type_Index Option equals expected value
+   function Type_Index_Equals
+     (Opt : Type_Index_Option; Expected : Natural) return Boolean
+   is
+   begin
+      return Type_Index_Options.Is_Some (Opt)
+        and then Type_Index_Options.Value (Opt) = Expected;
+   end Type_Index_Equals;
+
    --  =====================================================================
    --  Test: No Transitions
    --  =====================================================================
    procedure Test_Find_Type_No_Transitions is
       Data       : TZif_Data_Type;
       TZ_Type    : Timezone_Type_Record;
-      Type_Index : Natural;
+      Type_Index : Type_Index_Option;
    begin
       Put_Line ("Test: Find type with no transitions");
       TZ_Type := Make_Timezone_Type
@@ -79,10 +88,11 @@ procedure Test_TZif_Data is
       Timezone_Type_Vectors.Unchecked_Append (Data.Timezone_Types, TZ_Type);
       Type_Index := Find_Type_At_Time (Data, 0);
       Assert
-        (Type_Index = 0, "No transitions: should return first type index");
+        (Type_Index_Equals (Type_Index, 0),
+         "No transitions: should return first type index");
       Type_Index := Find_Type_At_Time (Data, 1000000);
       Assert
-        (Type_Index = 0,
+        (Type_Index_Equals (Type_Index, 0),
          "No transitions: should return first type for any time");
    end Test_Find_Type_No_Transitions;
 
@@ -93,7 +103,7 @@ procedure Test_TZif_Data is
       Data         : TZif_Data_Type;
       Type1, Type2 : Timezone_Type_Record;
       Trans        : Transition_Type;
-      Type_Index   : Natural;
+      Type_Index   : Type_Index_Option;
    begin
       Put_Line ("Test: Find type before first transition");
       Type1 := Make_Timezone_Type
@@ -106,7 +116,8 @@ procedure Test_TZif_Data is
       Transition_Vectors.Unchecked_Append (Data.Transitions, Trans);
       Type_Index := Find_Type_At_Time (Data, 50);
       Assert
-        (Type_Index = 1, "Before first transition: use first trans type");
+        (Type_Index_Equals (Type_Index, 1),
+         "Before first transition: use first trans type");
    end Test_Find_Type_Before_First;
 
    --  =====================================================================
@@ -116,7 +127,7 @@ procedure Test_TZif_Data is
       Data           : TZif_Data_Type;
       Type1, Type2   : Timezone_Type_Record;
       Trans1, Trans2 : Transition_Type;
-      Type_Index     : Natural;
+      Type_Index     : Type_Index_Option;
    begin
       Put_Line ("Test: Find type after last transition");
       Type1 := Make_Timezone_Type (-18000, False, "EST");
@@ -129,7 +140,7 @@ procedure Test_TZif_Data is
       Transition_Vectors.Unchecked_Append (Data.Transitions, Trans2);
       Type_Index := Find_Type_At_Time (Data, 300);
       Assert
-        (Type_Index = 0,
+        (Type_Index_Equals (Type_Index, 0),
          "After last transition: should use last transition's type");
    end Test_Find_Type_After_Last;
 
@@ -140,7 +151,7 @@ procedure Test_TZif_Data is
       Data           : TZif_Data_Type;
       Type1, Type2   : Timezone_Type_Record;
       Trans1, Trans2 : Transition_Type;
-      Type_Index     : Natural;
+      Type_Index     : Type_Index_Option;
    begin
       Put_Line ("Test: Find type between transitions");
       Type1 := Make_Timezone_Type (-18000, False, "EST");
@@ -152,7 +163,8 @@ procedure Test_TZif_Data is
       Transition_Vectors.Unchecked_Append (Data.Transitions, Trans1);
       Transition_Vectors.Unchecked_Append (Data.Transitions, Trans2);
       Type_Index := Find_Type_At_Time (Data, 150);
-      Assert (Type_Index = 1, "Between: should use correct type");
+      Assert
+        (Type_Index_Equals (Type_Index, 1), "Between: should use correct type");
    end Test_Find_Type_Between;
 
    --  =====================================================================

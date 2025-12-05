@@ -229,12 +229,12 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
 
          declare
             use TZif.Domain.Value_Object.Timezone_Type;
+            use TZif.Domain.TZif_Data.Type_Index_Options;
             TZif_Data    : constant TZif_Data_Type :=
               Infrastructure.TZif_Parser.Parse_Result.Value (Parse_Result);
-            --  TZif uses 0-based indices; vector is 1-based
-            Type_Index_0 : constant Natural       :=
+            --  Find_Type_At_Time returns Option; check if found
+            Type_Index_Opt : constant Type_Index_Option :=
               Find_Type_At_Time (TZif_Data, Epoch);
-            Type_Index   : constant Positive      := Type_Index_0 + 1;
             Tz_Length    : constant Natural       :=
               Timezone_Type_Vectors.Length (TZif_Data.Timezone_Types);
          begin
@@ -243,24 +243,36 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
                return
                  Get_Transition_Result_Package.Error
                    (Parse_Error, "No timezone types in zone file");
-            elsif Type_Index > Tz_Length then
+            elsif Is_None (Type_Index_Opt) then
                return
                  Get_Transition_Result_Package.Error
-                   (Parse_Error, "Invalid timezone type index in zone file");
+                   (Parse_Error, "No timezone type found for given time");
             end if;
 
             declare
-               TZ_Type : constant Timezone_Type_Record :=
-                 Get_Type (TZif_Data, Type_Index);
-               Info    :
-                 constant Domain.Value_Object.Transition_Info
-                   .Transition_Info_Type :=
-                 Domain.Value_Object.Transition_Info.Make_Transition_Info
-                   (Epoch_Time   => Epoch, UTC_Offset => TZ_Type.UTC_Offset,
-                    Is_DST       => TZ_Type.Is_DST,
-                    Abbreviation => Get_Abbreviation (TZ_Type));
+               --  TZif uses 0-based indices; vector is 1-based
+               Type_Index_0 : constant Natural := Value (Type_Index_Opt);
+               Type_Index   : constant Positive := Type_Index_0 + 1;
             begin
-               return Get_Transition_Result_Package.Ok (Info);
+               if Type_Index > Tz_Length then
+                  return
+                    Get_Transition_Result_Package.Error
+                      (Parse_Error, "Invalid timezone type index in zone file");
+               end if;
+
+               declare
+                  TZ_Type : constant Timezone_Type_Record :=
+                    Get_Type (TZif_Data, Type_Index);
+                  Info    :
+                    constant Domain.Value_Object.Transition_Info
+                      .Transition_Info_Type :=
+                    Domain.Value_Object.Transition_Info.Make_Transition_Info
+                      (Epoch_Time   => Epoch, UTC_Offset => TZ_Type.UTC_Offset,
+                       Is_DST       => TZ_Type.Is_DST,
+                       Abbreviation => Get_Abbreviation (TZ_Type));
+               begin
+                  return Get_Transition_Result_Package.Ok (Info);
+               end;
             end;
          end;
       end;
