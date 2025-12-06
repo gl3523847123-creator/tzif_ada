@@ -46,7 +46,20 @@ with TZif.Application.Port.Inbound.Discover_Sources;
 with TZif.Application.Port.Inbound.Load_Source;
 with TZif.Application.Port.Inbound.Validate_Source;
 with TZif.Domain.Types.Option;
+with TZif.Infrastructure.Platform;
 
+--  ==========================================================================
+--  Generic Repository with Platform Abstraction (DIP)
+--  ==========================================================================
+--  The Repository is parameterized by Platform_Ops to decouple from specific
+--  platform implementations (POSIX, Windows). This follows hexagonal
+--  architecture: the repository is a secondary adapter that depends on an
+--  abstract platform interface, not concrete implementations.
+--  ==========================================================================
+
+generic
+   with package Platform_Ops is new
+     TZif.Infrastructure.Platform.Platform_Operations (<>);
 package TZif.Infrastructure.Adapter.File_System.Repository is
 
    use TZif.Domain.Value_Object.Epoch_Seconds;

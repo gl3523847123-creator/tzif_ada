@@ -12,13 +12,13 @@ with Ada.Command_Line;
 with Test_Framework;
 with TZif.Application.Port.Inbound.Discover_Sources;
 with TZif.Application.Usecase.Discover_Sources;
-with TZif.Infrastructure.Adapter.File_System.Repository;
+with TZif.Infrastructure.Adapter.File_System.POSIX_Repository;
 procedure Test_Discover_Sources is
    use TZif.Application.Port.Inbound.Discover_Sources;
    package UC is new
      TZif.Application.Usecase.Discover_Sources.Use_Case
        (Repository_Discover_Sources =>
-         TZif.Infrastructure.Adapter.File_System.Repository.Discover_Sources);
+         TZif.Infrastructure.Adapter.File_System.POSIX_Repository.Discover_Sources);
    Test_Count : Natural := 0;
    Pass_Count : Natural := 0;
    procedure Assert (Condition : Boolean; Test_Name : String) is

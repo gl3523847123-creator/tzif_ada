@@ -91,7 +91,7 @@ library project TZif is
    --  =======================================================================
    case OS is
       when "unix" =>
-         --  Exclude Windows platform, Windows IO, Windows API, and Windows repo
+         --  Exclude Windows platform, Windows IO, Windows API, and Windows repos
          --  Keep Desktop IO and Embedded IO for POSIX systems
          for Excluded_Source_Files use
            ("tzif-infrastructure-platform-windows.ads",
@@ -100,9 +100,10 @@ library project TZif is
             "tzif-infrastructure-io-windows.adb",
             "tzif-api-windows.ads",
             "tzif-api__windows.adb",
-            "tzif-infrastructure-adapter-file_system-windows_zone_repository.ads");
+            "tzif-infrastructure-adapter-file_system-windows_zone_repository.ads",
+            "tzif-infrastructure-adapter-file_system-windows_repository.ads");
       when "windows" =>
-         --  Exclude POSIX platform, Desktop IO, Desktop API, and POSIX repo
+         --  Exclude POSIX platform, Desktop IO, Desktop API, and POSIX repos
          --  Use Windows API body instead of default tzif-api.adb
          for Excluded_Source_Files use
            ("tzif-infrastructure-platform-posix.ads",
@@ -111,7 +112,8 @@ library project TZif is
             "tzif-infrastructure-io-desktop.adb",
             "tzif-api-desktop.ads",
             "tzif-api.adb",
-            "tzif-infrastructure-adapter-file_system-posix_zone_repository.ads");
+            "tzif-infrastructure-adapter-file_system-posix_zone_repository.ads",
+            "tzif-infrastructure-adapter-file_system-posix_repository.ads");
    end case;
 
    for Object_Dir use "obj/" & TZif_Config.Build_Profile;

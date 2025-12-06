@@ -21,7 +21,6 @@ with Ada.Characters.Handling;
 with Ada.Strings.Fixed;
 with GNAT.Regpat;
 with TZif.Infrastructure.TZif_Parser;
-with TZif.Infrastructure.Platform.POSIX;
 with TZif.Infrastructure.ULID;
 with TZif.Infrastructure.CPU;
 with TZif.Infrastructure.Cache.Source_Cache;
@@ -355,10 +354,9 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
 
       --  Try to resolve symlink using readlink
       declare
-         use TZif.Infrastructure.Platform.POSIX;
          Link_Result :
            constant Infrastructure.Platform.Platform_String_Result :=
-           Operations.Read_Link (Localtime_Path);
+           Platform_Ops.Read_Link (Localtime_Path);
       begin
          if not Infrastructure.Platform.String_Result.Is_Ok (Link_Result) then
             return
