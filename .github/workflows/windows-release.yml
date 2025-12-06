@@ -69,6 +69,15 @@ jobs:
           cat alire.toml
 
       # -----------------------------------------------------------------------
+      # Update Alire index to ensure functional is found
+      # -----------------------------------------------------------------------
+      - name: Update Alire index
+        shell: bash
+        run: |
+          alr index --update-all
+          alr search functional
+
+      # -----------------------------------------------------------------------
       # Build tzif library (Windows platform)
       # -----------------------------------------------------------------------
       - name: Build tzif library
