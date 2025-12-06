@@ -16,7 +16,7 @@
 
 with "config/tzif_config.gpr";
 
-library project Tzif_Internal is
+library project TZif_Internal is
 
    for Library_Name use "tzif_internal";
    for Library_Kind use "static";
@@ -60,9 +60,13 @@ library project Tzif_Internal is
            ("tzif-infrastructure-platform-windows.ads",
             "tzif-infrastructure-platform-windows.adb");
       when "windows" =>
+         --  Exclude POSIX platform and desktop IO (uses POSIX symlinks)
+         --  Windows uses Win32 API for timezone detection instead
          for Excluded_Source_Files use
            ("tzif-infrastructure-platform-posix.ads",
-            "tzif-infrastructure-platform-posix.adb");
+            "tzif-infrastructure-platform-posix.adb",
+            "tzif-infrastructure-io-desktop.ads",
+            "tzif-infrastructure-io-desktop.adb");
    end case;
 
    for Object_Dir use "obj/internal";
@@ -74,7 +78,7 @@ library project Tzif_Internal is
    for Languages use ("Ada");
 
    package Compiler is
-      for Default_Switches ("Ada") use Tzif_Config.Ada_Compiler_Switches;
+      for Default_Switches ("Ada") use TZif_Config.Ada_Compiler_Switches;
    end Compiler;
 
-end Tzif_Internal;
+end TZif_Internal;
