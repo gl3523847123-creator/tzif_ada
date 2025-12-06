@@ -1,6 +1,6 @@
 pragma Ada_2022;
 --  ===========================================================================
---  Tzif.Infrastructure.Adapter.File_System.Zone_Repository
+--  TZif.Infrastructure.Adapter.File_System.Zone_Repository
 --  ===========================================================================
 --  Copyright (c) 2025 Michael Gardner, A Bit of Help, Inc.
 --  SPDX-License-Identifier: BSD-3-Clause
@@ -274,7 +274,7 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
                if Type_Index >= Tz_Length then
                   return
                     Transition_Info_Result.Error
-                      (Parse_Error, "Invalid timezone type index in zone file");
+                      (Parse_Error, "Invalid type index in zone file");
                end if;
 
                declare
