@@ -256,7 +256,8 @@ externals/*/lib/
 # Logs
 *.log
 
-data/
+# Exclude test invalid data (generated), but track tzif test data
+data/invalid/
 *.zip
 *.tar.gz
 

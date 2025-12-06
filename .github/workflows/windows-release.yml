@@ -1,0 +1,120 @@
+# =============================================================================
+# Windows Release Validation Workflow
+# =============================================================================
+# Purpose:
+#   Pre-flight check for Windows compatibility during release preparation.
+#   Called by release.py prepare script BEFORE tags are created.
+#   Development is done on macOS; this workflow ensures Windows compatibility.
+#
+# Triggers:
+#   - Manual dispatch only (called by release.py prepare)
+#   - Can also be triggered manually from GitHub Actions UI for testing
+#
+# Tests:
+#   - Windows platform timezone detection via Win32 API
+#   - Windows-to-IANA timezone mapping (CLDR data)
+#   - All cross-platform tests with Windows platform code
+#
+# Note:
+#   The xmlada dependency requires running from MSYS2 shell for configure
+#   to work properly. The setup-alire action handles this automatically.
+# =============================================================================
+
+name: Windows Release Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version being validated (e.g., 1.0.0)'
+        required: false
+        default: 'dev'
+      ref:
+        description: 'Git ref to checkout (branch, tag, or SHA)'
+        required: false
+        default: ''
+
+jobs:
+  windows-validation:
+    name: Windows Build & Test
+    runs-on: windows-latest
+
+    steps:
+      # -----------------------------------------------------------------------
+      # Checkout
+      # -----------------------------------------------------------------------
+      - name: Checkout tzif repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.ref }}
+          submodules: recursive
+
+      # -----------------------------------------------------------------------
+      # Setup Alire (functional dependency resolved from Alire index)
+      # -----------------------------------------------------------------------
+      - name: Setup Alire
+        uses: alire-project/setup-alire@v3
+        with:
+          version: 2.0.2
+
+      # -----------------------------------------------------------------------
+      # Build tzif library (Windows platform)
+      # -----------------------------------------------------------------------
+      - name: Build tzif library
+        shell: bash
+        run: |
+          alr build -- -XTZIF_OS=windows
+
+      # -----------------------------------------------------------------------
+      # Build test suites
+      # -----------------------------------------------------------------------
+      - name: Build unit tests
+        shell: bash
+        run: |
+          alr exec -- gprbuild -P test/unit/unit_tests.gpr -XTZIF_OS=windows -p
+
+      - name: Build integration tests
+        shell: bash
+        run: |
+          alr exec -- gprbuild -P test/integration/integration_tests.gpr -XTZIF_OS=windows -p
+
+      # -----------------------------------------------------------------------
+      # Run tests
+      # -----------------------------------------------------------------------
+      - name: Run unit tests
+        shell: bash
+        run: |
+          alr exec -- ./test/bin/unit_runner
+
+      - name: Run integration tests
+        shell: bash
+        env:
+          TZIF_DATA_PATH: ${{ github.workspace }}/data/tzif
+        run: |
+          alr exec -- ./test/bin/integration_runner
+
+      # -----------------------------------------------------------------------
+      # Windows-specific platform tests
+      # -----------------------------------------------------------------------
+      - name: Run Windows platform tests
+        shell: bash
+        env:
+          TZIF_DATA_PATH: ${{ github.workspace }}/data/tzif
+        run: |
+          alr exec -- ./test/bin/test_windows_platform
+
+      # -----------------------------------------------------------------------
+      # Summary
+      # -----------------------------------------------------------------------
+      - name: Test Summary
+        if: always()
+        shell: bash
+        run: |
+          echo "========================================"
+          echo "Windows Release Validation Complete"
+          echo "========================================"
+          echo "Version: ${{ github.event.inputs.version || 'dev' }}"
+          echo "Ref: ${{ github.event.inputs.ref || github.ref }}"
+          echo "Platform: windows-latest"
+          echo "TZIF_OS: windows"
+          echo "Alire: 2.0.2"

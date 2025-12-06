@@ -12,16 +12,35 @@ project Integration_Tests is
 
    for Source_Dirs use (".", "../common", "../support");
 
-   --  Exclude Windows-specific test on Unix (mirrors tzif.gpr OS detection)
-   --  Test_Platform_Stubs tests Windows stub behavior, not needed when
-   --  Windows code is excluded entirely
-   for Excluded_Source_Files use ("test_platform_stubs.adb");
+   --  Operating System Detection (mirrors tzif.gpr)
+   type OS_Type is ("unix", "windows");
+   OS : OS_Type := external ("TZIF_OS", "unix");
+
+   --  Platform-specific test exclusions:
+   --  - Unix: Exclude Windows platform tests
+   --  - Windows: Exclude old platform stubs test (superseded by real tests)
+   case OS is
+      when "unix" =>
+         for Excluded_Source_Files use
+           ("test_platform_stubs.adb",
+            "test_windows_platform.adb");
+      when "windows" =>
+         for Excluded_Source_Files use
+           ("test_platform_stubs.adb");
+   end case;
 
    for Object_Dir use "../../obj/test/integration";
    for Exec_Dir use "../bin";
 
-   --  Only the runner is Main; individual tests are procedures it calls
-   for Main use ("integration_runner.adb");
+   --  Main executables:
+   --  - integration_runner: runs all integration tests
+   --  - test_windows_platform: Windows-only standalone test (for CI)
+   case OS is
+      when "unix" =>
+         for Main use ("integration_runner.adb");
+      when "windows" =>
+         for Main use ("integration_runner.adb", "test_windows_platform.adb");
+   end case;
 
    package Compiler is
       for Default_Switches ("Ada") use TZif_Config.Ada_Compiler_Switches;

@@ -17,7 +17,7 @@ PROJECT_NAME := tzif
 .PHONY: all build build-dev build-opt build-release build-tests build-profiles check check-arch \
         clean clean-clutter clean-coverage clean-deep compress deps \
 		help prereqs rebuild refresh stats test test-all test-coverage test-framework \
-		test-integration test-unit test-python install-tools build-coverage-runtime \
+		test-integration test-unit test-python test-windows install-tools build-coverage-runtime \
 		submodule-init submodule-update submodule-status
 # FIX: ENABLE AFTER THE TARGETS CONVERT TO USING OUR ADAFMT TOOL, WHICH IS IN DEVELOPMENT.
 #       format format-all format-src format-tests
@@ -119,6 +119,7 @@ help: ## Display this help message
 	@echo "  test-python        - Run Python script tests (arch_guard.py validation)"
 	@echo "  test-examples      - Run Ada-based tests for all examples"
 	@echo "  test-coverage      - Run tests with coverage analysis"
+	@echo "  test-windows       - Trigger Windows CI validation on GitHub"
 	@echo ""
 	@echo "$(YELLOW)Examples Commands:$(NC)"
 	@echo "  build-examples     - Build all example programs"
@@ -369,6 +370,36 @@ test-framework: test-unit test-integration ## Run all test suites
 test-coverage: ## Run tests with GNATcoverage analysis
 	@echo "$(GREEN)Running tests with GNATcoverage analysis...$(NC)"
 	@$(PYTHON3) scripts/python/makefile/coverage_ada.py
+
+test-windows: ## Trigger Windows CI validation on GitHub Actions
+	@echo "$(CYAN)Triggering Windows CI validation...$(NC)"
+	@if [ ! -f ".github/workflows/windows-release.yml" ]; then \
+		echo "$(RED)✗ Windows workflow not found$(NC)"; \
+		exit 1; \
+	fi
+	@if ! command -v gh >/dev/null 2>&1; then \
+		echo "$(RED)✗ GitHub CLI (gh) not installed$(NC)"; \
+		echo "  Install from: https://cli.github.com/"; \
+		exit 1; \
+	fi
+	@REF=$$(git rev-parse HEAD); \
+	echo "$(CYAN)  Ref: $${REF:0:8}$(NC)"; \
+	gh workflow run windows-release.yml -f version=dev -f ref=$$REF; \
+	echo "$(GREEN)✓ Workflow triggered$(NC)"; \
+	echo ""; \
+	echo "$(YELLOW)Waiting for workflow to start...$(NC)"; \
+	sleep 5; \
+	RUN_ID=$$(gh run list --workflow=windows-release.yml --limit=1 --json databaseId -q '.[0].databaseId'); \
+	if [ -n "$$RUN_ID" ]; then \
+		echo "$(CYAN)  Run ID: $$RUN_ID$(NC)"; \
+		echo "$(YELLOW)Watching workflow (Ctrl+C to detach)...$(NC)"; \
+		gh run watch $$RUN_ID --exit-status && \
+			echo "$(GREEN)$(BOLD)✓ Windows validation passed$(NC)" || \
+			(echo "$(RED)$(BOLD)✗ Windows validation failed$(NC)" && exit 1); \
+	else \
+		echo "$(RED)✗ Could not find workflow run$(NC)"; \
+		exit 1; \
+	fi
 
 # =============================================================================
 # Examples Commands
