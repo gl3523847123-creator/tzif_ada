@@ -19,6 +19,7 @@ project Windows_Platform_Tests is
      (".",
       "../common",
       "../support",
+      "../../src",
       "../../src/domain",
       "../../src/domain/entity",
       "../../src/domain/error",
