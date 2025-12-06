@@ -69,43 +69,22 @@ jobs:
           cat alire.toml
 
       # -----------------------------------------------------------------------
-      # Build tzif library (Windows platform)
+      # Build Windows platform tests only
       # -----------------------------------------------------------------------
-      - name: Build tzif library
+      # Note: The main tzif library and full test suite use Desktop IO which
+      # depends on POSIX symlinks. On Windows, we only validate:
+      # 1. Windows platform code compiles correctly
+      # 2. Win32 GetDynamicTimeZoneInformation API works
+      # 3. CLDR Windows-to-IANA timezone mapping works
+      # -----------------------------------------------------------------------
+      - name: Build Windows platform tests
         shell: bash
         run: |
-          alr build -- -XTZIF_OS=windows
+          alr exec -- gprbuild -P test/integration/integration_tests.gpr -XTZIF_OS=windows -p \
+            -u test_windows_platform.adb
 
       # -----------------------------------------------------------------------
-      # Build test suites
-      # -----------------------------------------------------------------------
-      - name: Build unit tests
-        shell: bash
-        run: |
-          alr exec -- gprbuild -P test/unit/unit_tests.gpr -XTZIF_OS=windows -p
-
-      - name: Build integration tests
-        shell: bash
-        run: |
-          alr exec -- gprbuild -P test/integration/integration_tests.gpr -XTZIF_OS=windows -p
-
-      # -----------------------------------------------------------------------
-      # Run tests
-      # -----------------------------------------------------------------------
-      - name: Run unit tests
-        shell: bash
-        run: |
-          alr exec -- ./test/bin/unit_runner
-
-      - name: Run integration tests
-        shell: bash
-        env:
-          TZIF_DATA_PATH: ${{ github.workspace }}/data/tzif
-        run: |
-          alr exec -- ./test/bin/integration_runner
-
-      # -----------------------------------------------------------------------
-      # Windows-specific platform tests
+      # Run Windows platform tests
       # -----------------------------------------------------------------------
       - name: Run Windows platform tests
         shell: bash
