@@ -58,6 +58,17 @@ jobs:
           version: 2.0.2
 
       # -----------------------------------------------------------------------
+      # Remove local pin (CI uses Alire index, not sibling checkout)
+      # -----------------------------------------------------------------------
+      - name: Remove functional pin for CI
+        shell: bash
+        run: |
+          # Remove the [[pins]] section that references local ../functional
+          sed -i '/^\[\[pins\]\]/,/^$/d' alire.toml
+          echo "Removed local pin, using Alire index for functional"
+          cat alire.toml
+
+      # -----------------------------------------------------------------------
       # Build tzif library (Windows platform)
       # -----------------------------------------------------------------------
       - name: Build tzif library
