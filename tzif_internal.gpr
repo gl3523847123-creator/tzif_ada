@@ -56,7 +56,7 @@ library project TZif_Internal is
    -- Platform-Specific Source Exclusions (same as tzif.gpr)
    case OS is
       when "unix" =>
-         --  Exclude Windows platform, Windows IO, and Windows API body
+         --  Exclude Windows platform, Windows IO, Windows API, and Windows repo
          --  Keep Desktop IO and Embedded IO for POSIX systems
          for Excluded_Source_Files use
            ("tzif-infrastructure-platform-windows.ads",
@@ -64,9 +64,10 @@ library project TZif_Internal is
             "tzif-infrastructure-io-windows.ads",
             "tzif-infrastructure-io-windows.adb",
             "tzif-api-windows.ads",
-            "tzif-api__windows.adb");
+            "tzif-api__windows.adb",
+            "tzif-infrastructure-adapter-file_system-windows_zone_repository.ads");
       when "windows" =>
-         --  Exclude POSIX platform, Desktop IO, and Desktop API body
+         --  Exclude POSIX platform, Desktop IO, Desktop API, and POSIX repo
          --  Use Windows API body instead of default tzif-api.adb
          for Excluded_Source_Files use
            ("tzif-infrastructure-platform-posix.ads",
@@ -74,7 +75,8 @@ library project TZif_Internal is
             "tzif-infrastructure-io-desktop.ads",
             "tzif-infrastructure-io-desktop.adb",
             "tzif-api-desktop.ads",
-            "tzif-api.adb");
+            "tzif-api.adb",
+            "tzif-infrastructure-adapter-file_system-posix_zone_repository.ads");
    end case;
 
    -- Platform-Specific Naming (same as tzif.gpr)

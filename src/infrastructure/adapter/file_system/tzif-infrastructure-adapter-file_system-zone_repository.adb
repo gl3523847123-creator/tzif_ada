@@ -18,7 +18,6 @@ with Ada.Directories;
 with Ada.Exceptions;
 with Ada.Text_IO;
 with TZif_Config;
-with TZif.Infrastructure.Platform.POSIX;
 with TZif.Infrastructure.TZif_Parser;
 with TZif.Infrastructure.ULID;
 with TZif.Domain.Error;
@@ -314,13 +313,14 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
               "/etc/localtime not found - cannot determine local timezone");
       end if;
 
-      --  Try to read the symlink target using platform-specific operations
+      --  Try to read the symlink target using injected platform operations
       declare
          --  Read symlink - on macOS/Linux, /etc/localtime is usually a symlink
          --  to something like /usr/share/zoneinfo/America/Los_Angeles
+         --  On Windows, this uses CLDR mapping via the Windows platform adapter
          Link_Result :
            constant Infrastructure.Platform.Platform_String_Result :=
-           Infrastructure.Platform.POSIX.Operations.Read_Link (Localtime_Path);
+           Platform_Ops.Read_Link (Localtime_Path);
       begin
          --  Check if readlink succeeded
          if not Infrastructure.Platform.String_Result.Is_Ok (Link_Result) then
