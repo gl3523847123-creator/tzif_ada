@@ -29,7 +29,7 @@ with TZif.Domain.Error.Result;
 with TZif.Domain.TZif_Data;
 
 package TZif.Domain.Parser with
-  SPARK_Mode => On
+  SPARK_Mode => Off  --  Generic_Result.And_Then uses access-to-subprogram
 is
 
    use Interfaces;
@@ -89,8 +89,8 @@ is
    procedure Parse_From_Bytes
      (Bytes  :     Byte_Array; Length : Natural;
       Result : out Parse_Result_Type) with
-     SPARK_Mode => On, Pre => Length <= Bytes'Length and then Length > 0,
-     Post       => True;
+     Pre  => Length <= Bytes'Length and then Length > 0,
+     Post => True;
    --  ROADMAP: Strengthen postconditions (see roadmap.md):
    --    If Result.Is_Ok then Result.Value is valid TZif_Data_Type
    --    If Result.Is_Error then Result.Error explains parse failure

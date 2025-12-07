@@ -15,6 +15,13 @@ with Ada.Strings;
 package body TZif.Domain.Value_Object.Zone_Id is
 
    --  ========================================================================
+   --  Default Value
+   --  ========================================================================
+
+   function Default_Zone_Id return Zone_Id_Type is
+     ((ID => Zone_Id_Strings.Null_Bounded_String));
+
+   --  ========================================================================
    --  Constructor Functions
    --  ========================================================================
 

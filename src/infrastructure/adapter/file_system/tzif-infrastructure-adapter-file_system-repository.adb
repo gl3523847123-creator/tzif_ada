@@ -457,7 +457,10 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
                              and then Name /= "+VERSION"
                            then
                               begin
-                                 Zones.Append (Make_Zone_Id (Zone_Name));
+                                 if not Zone_Id_Vectors.Is_Full (Zones) then
+                                    Zone_Id_Vectors.Unchecked_Append
+                                      (Zones, Make_Zone_Id (Zone_Name));
+                                 end if;
                               exception
                                  when Constraint_Error =>
                                     --  DELIBERATE: Skip invalid zone names
@@ -486,11 +489,9 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
       end Scan_Directory;
 
       function Less_Than (Left, Right : Zone_Id_Type) return Boolean is
-      begin
-         return To_String (Left) < To_String (Right);
-      end Less_Than;
+        (To_String (Left) < To_String (Right));
 
-      package Zone_Sorting is new Zone_Id_Vectors.Generic_Sorting
+      procedure Sort_Zones is new Zone_Id_Vectors.Generic_Sort
         ("<" => Less_Than);
 
    begin
@@ -502,11 +503,9 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
 
       Scan_Directory (Path_Str);
 
+      Sort_Zones (Zones);
       if Descending then
-         Zone_Sorting.Sort (Zones);
          Zone_Id_Vectors.Reverse_Elements (Zones);
-      else
-         Zone_Sorting.Sort (Zones);
       end if;
 
       return List_All_Zones_Result_Package.Ok (Zones);
@@ -895,24 +894,28 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
              (Path_Str);
       begin
          if not Exists (Path) then
-            Error_Vectors.Append
-              (Data.Errors,
-               Error_Type'
-                 (Kind    => IO_Error,
-                  Message =>
-                    Error_Strings.To_Bounded_String
-                      ("Path not found: " & Path)));
+            if not Error_Vectors.Is_Full (Data.Errors) then
+               Error_Vectors.Unchecked_Append
+                 (Data.Errors,
+                  Error_Type'
+                    (Kind    => IO_Error,
+                     Message =>
+                       Error_Strings.To_Bounded_String
+                         ("Path not found: " & Path)));
+            end if;
             return;
          end if;
 
          if Kind (Path) /= Directory then
-            Error_Vectors.Append
-              (Data.Errors,
-               Error_Type'
-                 (Kind    => Validation_Error,
-                  Message =>
-                    Error_Strings.To_Bounded_String
-                      ("Not a directory: " & Path)));
+            if not Error_Vectors.Is_Full (Data.Errors) then
+               Error_Vectors.Unchecked_Append
+                 (Data.Errors,
+                  Error_Type'
+                    (Kind    => Validation_Error,
+                     Message =>
+                       Error_Strings.To_Bounded_String
+                         ("Not a directory: " & Path)));
+            end if;
             return;
          end if;
 
@@ -921,13 +924,15 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
             Version_File : constant String := Path & "/+VERSION";
          begin
             if not Exists (Version_File) then
-               Error_Vectors.Append
-                 (Data.Errors,
-                  Error_Type'
-                    (Kind    => Validation_Error,
-                     Message =>
-                       Error_Strings.To_Bounded_String
-                         ("No +VERSION file in: " & Path)));
+               if not Error_Vectors.Is_Full (Data.Errors) then
+                  Error_Vectors.Unchecked_Append
+                    (Data.Errors,
+                     Error_Type'
+                       (Kind    => Validation_Error,
+                        Message =>
+                          Error_Strings.To_Bounded_String
+                            ("No +VERSION file in: " & Path)));
+               end if;
                return;
             end if;
          end;
@@ -942,30 +947,40 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
             Zone_Count  : constant Natural             := Count_Zones (Path);
             Source      : constant Source_Info_Type    :=
               Make_Source_Info (ULID, Path_Val, Version, Zone_Count);
+            Is_Duplicate : Boolean                     := False;
          begin
-            --  Check for duplicates by path
-            for Existing of Data.Sources loop
-               if Get_Path (Existing) = Path_Val then
-                  return;  -- Already have this source
-
-               end if;
+            --  Check for duplicates by path using index-based iteration
+            for I in 1 .. Source_Info_Vectors.Length (Data.Sources) loop
+               declare
+                  Existing : constant Source_Info_Type :=
+                    Source_Info_Vectors.Unchecked_Element (Data.Sources, I);
+               begin
+                  if Get_Path (Existing) = Path_Val then
+                     Is_Duplicate := True;
+                     exit;
+                  end if;
+               end;
             end loop;
 
-            Application.Port.Inbound.Discover_Sources.Source_Info_Vectors
-              .Append
-              (Data.Sources, Source);
+            if not Is_Duplicate
+              and then not Source_Info_Vectors.Is_Full (Data.Sources)
+            then
+               Source_Info_Vectors.Unchecked_Append (Data.Sources, Source);
+            end if;
          end;
 
       exception
          when E : others =>
-            Error_Vectors.Append
-              (Data.Errors,
-               Error_Type'
-                 (Kind    => IO_Error,
-                  Message =>
-                    Error_Strings.To_Bounded_String
-                      ("Error scanning " & Path & ": " &
-                       Ada.Exceptions.Exception_Message (E))));
+            if not Error_Vectors.Is_Full (Data.Errors) then
+               Error_Vectors.Unchecked_Append
+                 (Data.Errors,
+                  Error_Type'
+                    (Kind    => IO_Error,
+                     Message =>
+                       Error_Strings.To_Bounded_String
+                         ("Error scanning " & Path & ": " &
+                          Ada.Exceptions.Exception_Message (E))));
+            end if;
       end Scan_Path;
 
       Task_Count : constant Natural :=
@@ -980,9 +995,9 @@ package body TZif.Infrastructure.Adapter.File_System.Repository is
              (Kind => Validation_Error, Message => "No search paths provided");
       end if;
 
-      --  Sequential scanning for now (parallel implementation TBD)
-      for Path of Search_Paths loop
-         Scan_Path (Path);
+      --  Sequential scanning using index-based iteration
+      for I in 1 .. Path_Vectors.Length (Search_Paths) loop
+         Scan_Path (Path_Vectors.Unchecked_Element (Search_Paths, I));
       end loop;
 
       --  Return results

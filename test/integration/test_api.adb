@@ -116,7 +116,7 @@ begin
    declare
       Paths : Path_List;
    begin
-      Discover_Port.Path_Vectors.Append
+      Discover_Port.Path_Vectors.Unchecked_Append
         (Paths,
          Discover_Port.Path_Strings.To_Bounded_String ("/usr/share/zoneinfo"));
       declare

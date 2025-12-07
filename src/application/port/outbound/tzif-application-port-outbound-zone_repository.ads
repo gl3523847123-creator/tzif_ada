@@ -1,4 +1,5 @@
 pragma Ada_2022;
+pragma Unevaluated_Use_Of_Old (Allow);
 --  ===========================================================================
 --  TZif.Application.Port.Outbound.Zone_Repository
 --  ===========================================================================
@@ -24,11 +25,17 @@ pragma Ada_2022;
 --    TZif.Domain.Entity.Zone
 --    TZif.Domain.Value_Object.Zone_Id
 --    TZif.Domain.Value_Object.TZif_Header
+--    TZif.Domain.Types.Bounded_Vector
+--
+--  SPARK Compatibility:
+--    Uses bounded vectors instead of Ada.Containers.Vectors for SPARK
+--    formal verification. Capacity limits defined in TZif_Config.
 --
 --  ===========================================================================
 
-with Ada.Containers.Vectors;
+with TZif_Config;
 with TZif.Domain.Entity.Zone;
+with TZif.Domain.Types.Bounded_Vector;
 with TZif.Domain.Value_Object.Zone_Id;
 with TZif.Domain.Value_Object.TZif_Header;
 with TZif.Domain.Value_Object.Epoch_Seconds;
@@ -37,6 +44,7 @@ with TZif.Domain.Value_Object.Source_Info;
 with TZif.Domain.Error.Result;
 
 package TZif.Application.Port.Outbound.Zone_Repository with
+  SPARK_Mode => Off,  --  Generic_Result.And_Then uses access-to-subprogram
   Preelaborate
 is
 
@@ -54,20 +62,24 @@ is
    type Sort_Order_Type is (Ascending, Descending);
 
    --  ========================================================================
-   --  Zone ID Collection Type
+   --  Zone ID Collection Type - SPARK-compatible bounded
    --  ========================================================================
 
-   package Zone_Id_Vectors is new Ada.Containers.Vectors
-     (Index_Type => Positive, Element_Type => Zone_Id_Type, "=" => "=");
+   package Zone_Id_Vectors is new TZif.Domain.Types.Bounded_Vector
+     (Element_Type  => Zone_Id_Type,
+      Capacity      => TZif_Config.Max_Zone_Ids,
+      Default_Value => Default_Zone_Id);
 
    subtype Zone_Id_List is Zone_Id_Vectors.Vector;
 
    --  ========================================================================
-   --  Source Info Collection Type
+   --  Source Info Collection Type - SPARK-compatible bounded
    --  ========================================================================
 
-   package Source_Info_Vectors is new Ada.Containers.Vectors
-     (Index_Type => Positive, Element_Type => Source_Info_Type, "=" => "=");
+   package Source_Info_Vectors is new TZif.Domain.Types.Bounded_Vector
+     (Element_Type  => Source_Info_Type,
+      Capacity      => TZif_Config.Max_Sources,
+      Default_Value => Default_Source_Info);
 
    subtype Source_Info_List is Source_Info_Vectors.Vector;
 

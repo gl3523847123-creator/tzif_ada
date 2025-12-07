@@ -49,8 +49,9 @@ begin
       Result : Discovery_Result;
    begin
       --  Add common system paths
-      Paths.Append (Make_Path ("/usr/share/zoneinfo"));
-      Paths.Append (Make_Path ("/var/db/timezone/zoneinfo"));
+      Path_Vectors.Unchecked_Append (Paths, Make_Path ("/usr/share/zoneinfo"));
+      Path_Vectors.Unchecked_Append
+        (Paths, Make_Path ("/var/db/timezone/zoneinfo"));
       Result := UC.Execute (Paths);
       Assert
         (Discovery_Result_Package.Is_Ok (Result)

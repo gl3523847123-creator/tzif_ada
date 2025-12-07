@@ -86,9 +86,11 @@ is
 
       --  Same-type bind: T -> Result[T]
       --  Applies F only when Self is Ok; otherwise propagates error
+      --  Note: SPARK_Mode => Off due to access-to-subprogram parameter
       function And_Then
         (Self : Result; F : not null access function (X : T) return Result)
          return Result with
+        SPARK_Mode => Off,
         Inline;
 
       --  Note: Map and And_Then_To for type transformation require

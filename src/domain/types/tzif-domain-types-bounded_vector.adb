@@ -15,7 +15,7 @@ is
    --  ========================================================================
 
    function Empty_Vector return Vector is
-     ((Data => [others => <>], Last => 0));
+     ((Data => [others => Default_Value], Last => 0));
 
    --  ========================================================================
    --  Query Functions
@@ -153,12 +153,87 @@ is
    end Unchecked_Delete_Last;
 
    procedure Unchecked_Replace
-     (V     : in out Vector;
+     (V     : in Out Vector;
       Index : Index_Type;
       E     : Element_Type)
    is
    begin
       V.Data (Index) := E;
    end Unchecked_Replace;
+
+   --  ========================================================================
+   --  Swap Operation
+   --  ========================================================================
+
+   procedure Swap
+     (V : in Out Vector;
+      I : Index_Type;
+      J : Index_Type)
+   is
+      Temp : constant Element_Type := V.Data (I);
+   begin
+      V.Data (I) := V.Data (J);
+      V.Data (J) := Temp;
+   end Swap;
+
+   --  ========================================================================
+   --  Reverse Operation
+   --  ========================================================================
+
+   procedure Reverse_Elements (V : in Out Vector) is
+      Left  : Index_Type := 1;
+      Right : Extended_Index := V.Last;
+   begin
+      --  Swap elements from ends toward middle
+      while Left < Right loop
+         pragma Loop_Invariant (Left <= V.Last);
+         pragma Loop_Invariant (Right <= V.Last);
+         pragma Loop_Invariant (V.Last = V.Last'Loop_Entry);
+
+         Swap (V, Left, Right);
+         Left := Left + 1;
+         Right := Right - 1;
+      end loop;
+   end Reverse_Elements;
+
+   --  ========================================================================
+   --  Sorting (Insertion Sort - SPARK-compatible)
+   --  ========================================================================
+   --  Insertion sort is chosen for SPARK compatibility:
+   --  - No recursion (bounded stack usage)
+   --  - Simple loop structure with provable termination
+   --  - O(n²) worst case, O(n) best case (nearly sorted data)
+   --  - Stable sort (equal elements maintain relative order)
+   --  ========================================================================
+
+   procedure Generic_Sort (V : in Out Vector) is
+      J    : Extended_Index;
+      Key  : Element_Type;
+   begin
+      --  Empty or single-element vectors are already sorted
+      if V.Last <= 1 then
+         return;
+      end if;
+
+      --  Insertion sort: build sorted sequence from left to right
+      for I in 2 .. V.Last loop
+         pragma Loop_Invariant (V.Last = V.Last'Loop_Entry);
+
+         Key := V.Data (I);
+         J := I - 1;
+
+         --  Shift larger elements to the right (use "<" since we only have that)
+         while J >= 1 and then Key < V.Data (J) loop
+            pragma Loop_Invariant (J < I);
+            pragma Loop_Invariant (V.Last = V.Last'Loop_Entry);
+
+            V.Data (J + 1) := V.Data (J);
+            J := J - 1;
+         end loop;
+
+         --  Insert key at correct position
+         V.Data (J + 1) := Key;
+      end loop;
+   end Generic_Sort;
 
 end TZif.Domain.Types.Bounded_Vector;

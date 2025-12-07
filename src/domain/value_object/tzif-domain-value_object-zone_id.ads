@@ -51,6 +51,14 @@ is
    subtype Zone_Id_String is Zone_Id_Type;
 
    --  ========================================================================
+   --  Default Value (for SPARK-compatible bounded containers)
+   --  ========================================================================
+
+   --  Returns an empty Zone_Id (used for array initialization)
+   function Default_Zone_Id return Zone_Id_Type with
+     Inline;
+
+   --  ========================================================================
    --  Constructor Functions
    --  ========================================================================
 

@@ -53,16 +53,18 @@ is
 
    --  Bounded vector for transitions (capacity from TZif_Config)
    package Transition_Vectors is new TZif.Domain.Types.Bounded_Vector
-     (Element_Type => Transition.Transition_Type,
-      Capacity     => TZif_Config.Max_Transitions_Per_Zone);
+     (Element_Type  => Transition.Transition_Type,
+      Capacity      => TZif_Config.Max_Transitions_Per_Zone,
+      Default_Value => Transition.Default_Transition);
 
    subtype Transition_Vector is Transition_Vectors.Vector;
 
    --  Bounded vector for timezone types (capacity from TZif_Config)
    --  Note: Access with (type_index + 1) to convert 0-based TZif to 1-based
    package Timezone_Type_Vectors is new TZif.Domain.Types.Bounded_Vector
-     (Element_Type => Timezone_Type.Timezone_Type_Record,
-      Capacity     => TZif_Config.Max_Types_Per_Zone);
+     (Element_Type  => Timezone_Type.Timezone_Type_Record,
+      Capacity      => TZif_Config.Max_Types_Per_Zone,
+      Default_Value => Timezone_Type.Default_Timezone_Type);
 
    subtype Timezone_Type_Vector is Timezone_Type_Vectors.Vector;
 
@@ -85,10 +87,16 @@ is
       Leap_Count : Integer;
    end record;
 
+   --  Default value (for SPARK-compatible bounded containers)
+   function Default_Leap_Second return Leap_Second_Type is
+     ((Occurrence_Time => 0, Leap_Count => 0))
+     with Inline;
+
    --  Bounded vector for leap seconds (capacity from TZif_Config)
    package Leap_Second_Vectors is new TZif.Domain.Types.Bounded_Vector
-     (Element_Type => Leap_Second_Type,
-      Capacity     => TZif_Config.Max_Leap_Seconds);
+     (Element_Type  => Leap_Second_Type,
+      Capacity      => TZif_Config.Max_Leap_Seconds,
+      Default_Value => Default_Leap_Second);
 
    subtype Leap_Second_Vector is Leap_Second_Vectors.Vector;
 

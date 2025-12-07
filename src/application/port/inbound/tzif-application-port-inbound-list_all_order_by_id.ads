@@ -1,4 +1,5 @@
 pragma Ada_2022;
+pragma Unevaluated_Use_Of_Old (Allow);
 --  ===========================================================================
 --  TZif.Application.Port.Inbound.List_All_Order_By_Id
 --  ===========================================================================
@@ -19,15 +20,21 @@ pragma Ada_2022;
 --  Dependencies:
 --    TZif.Domain.Error.Result
 --    TZif.Domain.Value_Object.Zone_Id
---    Preelaborate
+--    TZif.Domain.Types.Bounded_Vector
+--
+--  SPARK Compatibility:
+--    Uses bounded vectors instead of Ada.Containers.Vectors for SPARK
+--    formal verification. Capacity limits defined in TZif_Config.
 --
 --  ===========================================================================
 
-with Ada.Containers.Vectors;
+with TZif_Config;
 with TZif.Domain.Error.Result;
+with TZif.Domain.Types.Bounded_Vector;
 with TZif.Domain.Value_Object.Zone_Id;
 
 package TZif.Application.Port.Inbound.List_All_Order_By_Id with
+  SPARK_Mode => Off,  --  Generic_Result.And_Then uses access-to-subprogram
   Preelaborate
 is
 
@@ -37,9 +44,11 @@ is
    --  Canonical Types (GPT-5 Pattern: defined ONCE, used everywhere)
    --  ========================================================================
 
-   --  Zone ID collection type
-   package Zone_Id_Vectors is new Ada.Containers.Vectors
-     (Index_Type => Positive, Element_Type => Zone_Id_Type, "=" => "=");
+   --  Zone ID collection type - SPARK-compatible bounded
+   package Zone_Id_Vectors is new TZif.Domain.Types.Bounded_Vector
+     (Element_Type  => Zone_Id_Type,
+      Capacity      => TZif_Config.Max_Zone_Ids,
+      Default_Value => Default_Zone_Id);
    subtype Zone_Id_List is Zone_Id_Vectors.Vector;
 
    --  Result type: Result[Zone_Id_List]

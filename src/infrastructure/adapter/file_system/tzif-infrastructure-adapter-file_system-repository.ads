@@ -28,7 +28,6 @@ pragma Ada_2022;
 --  ===========================================================================
 
 with Ada.Strings.Bounded;
-with Ada.Containers.Vectors;
 with TZif.Domain.Error.Result;
 with TZif.Domain.Value_Object.Epoch_Seconds;
 with TZif.Domain.Value_Object.Source_Info;
@@ -109,12 +108,15 @@ package TZif.Infrastructure.Adapter.File_System.Repository is
    --  Collection Types
    --  ========================================================================
 
-   --  Zone_Id_List removed - use canonical type from
+   --  Zone_Id_List - use canonical type from
    --  Application.Port.Inbound.List_All_Order_By_Id
 
-   package Source_Info_Vectors is new Ada.Containers.Vectors
-     (Index_Type => Positive, Element_Type => Source_Info_Type, "=" => "=");
-   subtype Source_Info_List is Source_Info_Vectors.Vector;
+   --  Source_Info_List - use canonical type from
+   --  Application.Port.Inbound.Discover_Sources
+   package Discover_Port renames
+     TZif.Application.Port.Inbound.Discover_Sources;
+   package Source_Info_Vectors renames Discover_Port.Source_Info_Vectors;
+   subtype Source_Info_List is Discover_Port.Source_Info_List;
 
    --  ========================================================================
    --  Result Types - ALL REMOVED (GPT-5 Pattern)

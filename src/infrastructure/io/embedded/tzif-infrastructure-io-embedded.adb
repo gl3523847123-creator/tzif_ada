@@ -313,13 +313,18 @@ is
             Message =>
               TZif.Domain.Error.Error_Strings.To_Bounded_String (Msg));
       begin
-         Data.Errors.Append (Err);
+         if not Discover.Error_Vectors.Is_Full (Data.Errors) then
+            Discover.Error_Vectors.Unchecked_Append (Data.Errors, Err);
+         end if;
       end Add_Error;
 
    begin
-      for Path_Elem of Search_Paths loop
+      --  Process each search path using index-based iteration
+      for I in 1 .. Discover.Path_Vectors.Length (Search_Paths) loop
          declare
-            Dir_Path : constant String :=
+            Path_Elem : constant Discover.Path_String :=
+              Discover.Path_Vectors.Unchecked_Element (Search_Paths, I);
+            Dir_Path  : constant String               :=
               Discover.Path_Strings.To_String (Path_Elem);
          begin
             if not Exists (Dir_Path) then
@@ -360,7 +365,12 @@ is
                              Path       => Make_Path (Dir_Path),
                              Version    => Version_Str,
                              Zone_Count => Zone_Count);
-                        Data.Sources.Append (Source);
+                        if not Discover.Source_Info_Vectors.Is_Full
+                            (Data.Sources)
+                        then
+                           Discover.Source_Info_Vectors.Unchecked_Append
+                             (Data.Sources, Source);
+                        end if;
                      else
                         Add_Error
                           (TZif.Domain.Error.Validation_Error,
@@ -553,7 +563,11 @@ is
                              and then Name /= "+VERSION"
                            then
                               begin
-                                 Zones.Append (Make_Zone_Id (Zone_Name));
+                                 if not List_All.Zone_Id_Vectors.Is_Full (Zones)
+                                 then
+                                    List_All.Zone_Id_Vectors.Unchecked_Append
+                                      (Zones, Make_Zone_Id (Zone_Name));
+                                 end if;
                               exception
                                  when Constraint_Error =>
                                     null;
@@ -575,11 +589,9 @@ is
       end Scan_Directory;
 
       function Less_Than (Left, Right : Zone_Id_Type) return Boolean is
-      begin
-         return To_String (Left) < To_String (Right);
-      end Less_Than;
+        (To_String (Left) < To_String (Right));
 
-      package Zone_Sorting is new List_All.Zone_Id_Vectors.Generic_Sorting
+      procedure Sort_Zones is new List_All.Zone_Id_Vectors.Generic_Sort
         ("<" => Less_Than);
 
    begin
@@ -593,11 +605,9 @@ is
 
       Scan_Directory (Path_Str);
 
+      Sort_Zones (Zones);
       if Descending then
-         Zone_Sorting.Sort (Zones);
          List_All.Zone_Id_Vectors.Reverse_Elements (Zones);
-      else
-         Zone_Sorting.Sort (Zones);
       end if;
 
       Result := List_All.List_All_Zones_Result_Package.Ok (Zones);

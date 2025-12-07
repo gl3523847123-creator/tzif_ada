@@ -41,6 +41,11 @@ is
       Type_Index : Natural;
    end record;
 
+   --  Default value (for SPARK-compatible bounded containers)
+   function Default_Transition return Transition_Type is
+     ((Time => 0, Type_Index => 0))
+     with Inline;
+
    --  ========================================================================
    --  Comparison Functions
    --  ========================================================================

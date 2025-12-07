@@ -18,10 +18,15 @@ with TZif.Domain.Types.Bounded_Vector;
 
 procedure Test_Bounded_Vector is
 
+   --  Default value for Integer (required for SPARK-compatible containers)
+   function Default_Integer return Integer is (0) with Inline;
+
    --  Instantiate bounded vector with Integer elements and small capacity
    --  Small capacity (5) makes it easy to test boundary conditions
    package Int_Vectors is new TZif.Domain.Types.Bounded_Vector
-     (Element_Type => Integer, Capacity => 5);
+     (Element_Type  => Integer,
+      Capacity      => 5,
+      Default_Value => Default_Integer);
 
    use Int_Vectors;
 

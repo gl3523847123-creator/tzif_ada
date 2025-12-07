@@ -47,6 +47,9 @@ pragma Unevaluated_Use_Of_Old (Allow);
 generic
    type Element_Type is private;
    Capacity : Positive;
+   --  Default_Value provides initialization for internal storage.
+   --  Required for SPARK compatibility (no box notation allowed).
+   with function Default_Value return Element_Type;
 package TZif.Domain.Types.Bounded_Vector with
   SPARK_Mode => On,
   Pure
@@ -302,6 +305,43 @@ is
       Index : Index_Type;
       E     : Element_Type) with
      Pre  => Index <= Length (V),
+     Post => Length (V) = Length (V)'Old;
+
+   --  ========================================================================
+   --  Sorting (Nested Generic)
+   --  ========================================================================
+   --  Instantiate with a comparison function to get a sort procedure.
+   --  Uses insertion sort for SPARK compatibility (no recursion, bounded).
+   --
+   --  Example:
+   --    function Less_Than (A, B : My_Type) return Boolean is (A < B);
+   --    procedure Sort is new My_Vectors.Generic_Sort ("<" => Less_Than);
+   --    Sort (My_Vector);
+   --  ========================================================================
+
+   generic
+      with function "<" (Left, Right : Element_Type) return Boolean is <>;
+   procedure Generic_Sort (V : in out Vector) with
+     Post => Length (V) = Length (V)'Old;
+
+   --  ========================================================================
+   --  Reverse Operation
+   --  ========================================================================
+
+   --  Reverses the order of elements in place
+   procedure Reverse_Elements (V : in Out Vector) with
+     Post => Length (V) = Length (V)'Old;
+
+   --  ========================================================================
+   --  Swap Operation (used by sorting and reverse)
+   --  ========================================================================
+
+   --  Swaps two elements at given indices
+   procedure Swap
+     (V : in Out Vector;
+      I : Index_Type;
+      J : Index_Type) with
+     Pre  => I <= Length (V) and then J <= Length (V),
      Post => Length (V) = Length (V)'Old;
 
 private

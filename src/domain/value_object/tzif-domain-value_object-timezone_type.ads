@@ -59,6 +59,13 @@ is
       Abbreviation : Abbreviation_Type;
    end record;
 
+   --  Default value (for SPARK-compatible bounded containers)
+   function Default_Timezone_Type return Timezone_Type_Record is
+     ((UTC_Offset   => 0,
+       Is_DST       => False,
+       Abbreviation => Abbreviation_Strings.Null_Bounded_String))
+     with Inline;
+
    --  ========================================================================
    --  Constructor Functions
    --  ========================================================================

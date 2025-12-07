@@ -56,4 +56,9 @@ is
       Message : Error_Strings.Bounded_String;
    end record;
 
+   --  Default value (for SPARK-compatible bounded containers)
+   function Default_Error return Error_Type is
+     ((Kind => Internal_Error, Message => Error_Strings.Null_Bounded_String))
+     with Inline;
+
 end TZif.Domain.Error;

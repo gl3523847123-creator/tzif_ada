@@ -40,7 +40,7 @@ with TZif.Domain.Value_Object.Epoch_Seconds;
 with TZif.Domain.Value_Object.Source_Info;
 
 package TZif.Application.Operations with
-  SPARK_Mode => On
+  SPARK_Mode => Off  --  Uses Result types with access-to-subprogram
 is
 
    use Interfaces;
@@ -276,9 +276,7 @@ is
          Yield  :     Regex_Callback_Type;
          Result : out Find_By_Regex_Result.Result);
 
-   package All_Operations with
-     SPARK_Mode => On
-   is
+   package All_Operations is
       ----------------------------------------------------------------------
       --  Find_By_Id
       --

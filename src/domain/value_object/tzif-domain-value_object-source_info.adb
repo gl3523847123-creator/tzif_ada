@@ -94,6 +94,16 @@ package body TZif.Domain.Value_Object.Source_Info is
    end Make_Path;
 
    --  ========================================================================
+   --  Default Value
+   --  ========================================================================
+
+   function Default_Source_Info return Source_Info_Type is
+     ((ULID       => Null_ULID,
+       Path       => Path_Strings.Null_Bounded_String,
+       Version    => Version_Strings.Null_Bounded_String,
+       Zone_Count => 0));
+
+   --  ========================================================================
    --  Make_Source_Info
    --  ========================================================================
 

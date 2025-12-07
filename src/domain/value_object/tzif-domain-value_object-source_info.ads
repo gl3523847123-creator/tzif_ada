@@ -130,6 +130,10 @@ is
 
    type Source_Info_Type is private;
 
+   --  Default value (for SPARK-compatible bounded containers)
+   function Default_Source_Info return Source_Info_Type with
+     Inline;
+
    --  Constructor
    function Make_Source_Info
      (ULID : ULID_Type; Path : Path_String_Type; Version : Version_String_Type;

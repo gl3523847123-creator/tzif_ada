@@ -452,7 +452,10 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
                                TZif_Config.Max_Zone_ID_Length
                            then
                               begin
-                                 Zones.Append (Make_Zone_Id (Zone_Name));
+                                 if not Zone_Id_Vectors.Is_Full (Zones) then
+                                    Zone_Id_Vectors.Unchecked_Append
+                                      (Zones, Make_Zone_Id (Zone_Name));
+                                 end if;
                               exception
                                  when Constraint_Error =>
                                     --  DELIBERATE: Skip invalid zone names
@@ -487,11 +490,9 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
       --  Comparison function for sorting
       --  ===========================================================
       function Less_Than (Left, Right : Zone_Id_Type) return Boolean is
-      begin
-         return To_String (Left) < To_String (Right);
-      end Less_Than;
+        (To_String (Left) < To_String (Right));
 
-      package Zone_Sorting is new Zone_Id_Vectors.Generic_Sorting
+      procedure Sort_Zones is new Zone_Id_Vectors.Generic_Sort
         ("<" => Less_Than);
 
    begin
@@ -501,19 +502,14 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
          if Exists (Path.all) and then Kind (Path.all) = Directory then
             Scan_Directory (Path.all);
             exit;  --  Use first available source only
-
          end if;
       end loop;
 
       --  Sort the results
-      case Sort_Order is
-         when Ascending =>
-            Zone_Sorting.Sort (Zones);
-
-         when Descending =>
-            Zone_Sorting.Sort (Zones);
-            Zone_Id_Vectors.Reverse_Elements (Zones);
-      end case;
+      Sort_Zones (Zones);
+      if Sort_Order = Descending then
+         Zone_Id_Vectors.Reverse_Elements (Zones);
+      end if;
 
       return Zone_List_Result.Ok (Zones);
 
@@ -635,7 +631,9 @@ package body TZif.Infrastructure.Adapter.File_System.Zone_Repository is
                    (ULID       => ULID, Path => Path_Str, Version => Version,
                     Zone_Count => Zone_Count);
             begin
-               Sources.Append (Source);
+               if not Source_Info_Vectors.Is_Full (Sources) then
+                  Source_Info_Vectors.Unchecked_Append (Sources, Source);
+               end if;
             end;
          end if;
       end loop;
