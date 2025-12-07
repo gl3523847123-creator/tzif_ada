@@ -31,6 +31,10 @@ procedure Test_Version is
 begin
    Put_Line ("Test: TZif.Version accessors");
 
+   --  Note: These are compile-time verifiable assertions.
+   --  The compiler correctly identifies them as always-true, which is expected.
+   pragma Warnings (Off, "condition is always True");
+
    --  Test Major version
    Assert (TZif.Version.Major = 1, "Major version is 1");
 
@@ -43,6 +47,8 @@ begin
    --  Test Version string
    Assert (TZif.Version.Version'Length > 0, "Version string is non-empty");
    Assert (TZif.Version.Version = "1.0.0", "Version string is 1.0.0");
+
+   pragma Warnings (On, "condition is always True");
 
    --  Test Is_Stable function
    Assert
