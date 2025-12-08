@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0] - 2025-12-07
 
+**Test Coverage:** 425 unit + 131 integration + 11 examples = 567 total
+
 ### Breaking Changes
 
 - **Dependency**: `functional` upgraded from ^2.2.1 to ^3.0.0
