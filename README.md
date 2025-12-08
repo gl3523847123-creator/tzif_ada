@@ -1,4 +1,4 @@
-# TZif - IANA Timezone Information Library
+# IANA Timezone Information File Library
 
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE) [![Ada](https://img.shields.io/badge/Ada-2022-blue.svg)](https://ada-lang.io) [![Alire](https://img.shields.io/badge/Alire-2.0+-blue.svg)](https://alire.ada.dev) [![SPARK](https://img.shields.io/badge/SPARK-Proved-green.svg)](https://www.adacore.com/about-spark)
 
@@ -11,7 +11,7 @@
 
 ## Overview
 
-TZif is an Ada 2022 library for parsing and querying IANA's compiled timezone information (TZif format, RFC 9636). It provides a clean, functional API with Result monad error handling, hexagonal architecture, and embedded-safe patterns.
+TZif is an Ada 2022 library for parsing and querying IANA's compiled timezone information (TZif format, RFC 9636) files. It provides a clean, functional API with Result monad error handling, hexagonal architecture, and embedded-safe patterns.
 
 Designed for safety-critical, embedded, and high-assurance applications with full SPARK compatibility.
 
@@ -66,7 +66,7 @@ make spark-prove    # Run full SPARK proof verification
 - Discover and validate timezone data sources
 - Find zones by ID, pattern, region, or regex
 - Detect the system's local timezone
-- Cross-platform: Linux, macOS, BSD, Windows 11
+- Cross-platform: Linux, macOS, BSD, Windows 11, Embedded
 - 4-layer hexagonal architecture (Domain, Application, Infrastructure, API)
 - Result monad error handling (via `functional` crate)
 - Generic I/O plugin pattern for platform portability
