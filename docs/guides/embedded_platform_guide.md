@@ -1,11 +1,11 @@
 # Embedded Platform Guide
 
-**Version:** 2.0.0<br>
-**Date:** December 07, 2025<br>
+**Version:** 2.0.0  
+**Date:** December 07, 2025  
 **SPDX-License-Identifier:** BSD-3-Clause<br>
 **License File:** See the LICENSE file in the project root<br>
-**Copyright:** 2025 Michael Gardner, A Bit of Help, Inc.<br>
-**Status:** Released
+**Copyright:** 2025 Michael Gardner, A Bit of Help, Inc.<br>  
+**Status:** Released  
 
 ---
 
@@ -220,5 +220,5 @@ end Get_Local_Offset;
 
 ---
 
-**License:** BSD-3-Clause
-**Copyright:** 2025 Michael Gardner, A Bit of Help, Inc.
+**License:** BSD-3-Clause  
+**Copyright:** 2025 Michael Gardner, A Bit of Help, Inc.  

@@ -1,6 +1,6 @@
 # TZif Development Roadmap
 
-**Version:** 2.0.0
+**Version:** 2.0.0  
 **Date:** December 07, 2025  
 **SPDX-License-Identifier:** BSD-3-Clause<br>
 **License File:** See the LICENSE file in the project root<br>
@@ -81,9 +81,28 @@ The following roadmap items have been completed in v2.0.0:
 
 **Rationale**: Production deployments need visibility into cache performance for tuning and monitoring.
 
+#### 3. Infrastructure Layer Refactoring
+**Status**: Proposed
+**Effort**: Medium
+**Impact**: Medium (Maintainability)
+
+Review and refactor large infrastructure files exceeding 800-line threshold:
+- `infrastructure/adapter/file_system/tzif-infrastructure-adapter-file_system-repository.adb` (1204 lines)
+- `infrastructure/io/desktop/tzif-infrastructure-io-desktop.adb` (1178 lines)
+- `infrastructure/io/windows/tzif-infrastructure-io-windows.adb` (1119 lines)
+- `infrastructure/io/embedded/tzif-infrastructure-io-embedded.adb` (1092 lines)
+
+Consider:
+- Extract common patterns into shared helper packages
+- Split platform I/O into smaller focused units
+- Reduce code duplication across platform adapters
+- Maintain SPARK compatibility in refactored code
+
+**Rationale**: Large files are harder to maintain, review, and test. Refactoring improves code organization and reduces cognitive load for future development.
+
 ### Medium Priority
 
-#### 6. Path Traversal Protection Audit
+#### 4. Path Traversal Protection Audit
 **Status**: Review Required
 **Effort**: Low
 **Impact**: High (Security)
@@ -96,7 +115,7 @@ The following roadmap items have been completed in v2.0.0:
 
 **Rationale**: Security hardening for production use. Path canonicalization must be proven secure against directory traversal attacks.
 
-#### 7. TZif File Size Limits (DOS Protection)
+#### 5. TZif File Size Limits (DOS Protection)
 **Status**: Proposed
 **Effort**: Low
 **Impact**: Medium (Security)
@@ -113,7 +132,7 @@ The following roadmap items have been completed in v2.0.0:
 
 ### Medium Priority
 
-#### 3. Test Coverage Expansion
+#### 6. Test Coverage Expansion
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: High
@@ -126,7 +145,7 @@ The following roadmap items have been completed in v2.0.0:
 
 **Rationale**: Code review identified areas where additional test coverage would improve confidence in error handling and edge cases.
 
-#### 4. Exception Handler Audit
+#### 7. Exception Handler Audit
 **Status**: Proposed
 **Effort**: Low
 **Impact**: Medium
@@ -139,7 +158,7 @@ The following roadmap items have been completed in v2.0.0:
 
 **Rationale**: Silent exception handlers in directory scanning are intentional but should be periodically reviewed to ensure they remain appropriate as the codebase evolves.
 
-#### 5. Property-Based Testing for Parser
+#### 8. Property-Based Testing for Parser
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Medium
@@ -152,7 +171,7 @@ The following roadmap items have been completed in v2.0.0:
 
 **Rationale**: Property-based testing excels at finding edge cases in parsers. Would significantly increase confidence in TZif parser correctness across all possible inputs.
 
-#### 6. Performance Benchmark Suite
+#### 9. Performance Benchmark Suite
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Medium
@@ -174,7 +193,7 @@ The following roadmap items have been completed in v2.0.0:
 
 ### Low Priority
 
-#### 7. Port Versioning Strategy
+#### 1. Port Versioning Strategy
 **Status**: Planning
 **Effort**: Medium
 **Impact**: Low (Future-proofing)
@@ -187,7 +206,7 @@ The following roadmap items have been completed in v2.0.0:
 
 **Rationale**: Establishes clear path for API evolution without breaking existing users. Important for long-term library stability.
 
-#### 8. Error Context Enrichment
+#### 2. Error Context Enrichment
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Low
@@ -200,7 +219,7 @@ The following roadmap items have been completed in v2.0.0:
 
 **Rationale**: Enhanced error diagnostics would aid production debugging. Useful for troubleshooting complex error scenarios.
 
-#### 9. Advanced Timezone Queries
+#### 3. Advanced Timezone Queries
 **Status**: Proposed
 **Effort**: High
 **Impact**: Low
@@ -213,7 +232,7 @@ The following roadmap items have been completed in v2.0.0:
 
 **Rationale**: Advanced queries would support more sophisticated timezone applications. Nice-to-have features for specialized use cases.
 
-#### 10. Controlled Types for Resource Management
+#### 4. Controlled Types for Resource Management
 **Status**: Consideration
 **Effort**: Low
 **Impact**: Low
@@ -225,7 +244,7 @@ The following roadmap items have been completed in v2.0.0:
 
 **Rationale**: Current design doesn't need cleanup actions, but future enhancements might benefit from controlled types.
 
-#### 11. Cache Persistence Investigation
+#### 5. Cache Persistence Investigation
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Low
@@ -238,7 +257,7 @@ The following roadmap items have been completed in v2.0.0:
 
 **Rationale**: Current in-memory cache performs excellently (20ms cold start). Persisted cache adds SPARK/I/O complexity. Implementation deferred pending user demand and performance requirements.
 
-#### 12. Parallel Source Discovery Investigation
+#### 6. Parallel Source Discovery Investigation
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Low
@@ -251,7 +270,7 @@ The following roadmap items have been completed in v2.0.0:
 
 **Rationale**: Current sequential discovery is sufficient (5-15ms for typical sources). Parallel implementation adds concurrency complexity. Deferred pending user demand for faster discovery.
 
-#### 13. Improved Infinite Loop Detection
+#### 7. Improved Infinite Loop Detection
 **Status**: Proposed
 **Effort**: Low
 **Impact**: Low
