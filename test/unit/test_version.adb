@@ -36,7 +36,7 @@ begin
    pragma Warnings (Off, "condition is always True");
 
    --  Test Major version
-   Assert (TZif.Version.Major = 1, "Major version is 1");
+   Assert (TZif.Version.Major = 2, "Major version is 2");
 
    --  Test Minor version
    Assert (TZif.Version.Minor = 0, "Minor version is 0");
@@ -46,7 +46,7 @@ begin
 
    --  Test Version string
    Assert (TZif.Version.Version'Length > 0, "Version string is non-empty");
-   Assert (TZif.Version.Version = "1.0.0", "Version string is 1.0.0");
+   Assert (TZif.Version.Version = "2.0.0", "Version string is 2.0.0");
 
    pragma Warnings (On, "condition is always True");
 
@@ -55,10 +55,10 @@ begin
      (TZif.Version.Is_Stable = (not TZif.Version.Is_Prerelease),
       "Is_Stable is inverse of Is_Prerelease");
 
-   --  For current 1.0.0 release, verify stable status
-   Assert (TZif.Version.Is_Stable, "Version 1.0.0 is stable");
-   Assert (not TZif.Version.Is_Prerelease, "Version 1.0.0 is not prerelease");
-   Assert (not TZif.Version.Is_Development, "Version 1.0.0 is not dev");
+   --  For current 2.0.0 release, verify stable status
+   Assert (TZif.Version.Is_Stable, "Version 2.0.0 is stable");
+   Assert (not TZif.Version.Is_Prerelease, "Version 2.0.0 is not prerelease");
+   Assert (not TZif.Version.Is_Development, "Version 2.0.0 is not dev");
 
    --  Summary
    Put_Line ("====================================================");
