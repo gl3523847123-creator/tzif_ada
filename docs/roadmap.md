@@ -1,7 +1,7 @@
 # TZif Development Roadmap
 
-**Version:** 1.0.0  
-**Date:** December 02, 2025  
+**Version:** 2.0.0
+**Date:** December 07, 2025  
 **SPDX-License-Identifier:** BSD-3-Clause<br>
 **License File:** See the LICENSE file in the project root<br>
 **Copyright:** © 2025 Michael Gardner, A Bit of Help, Inc.<br>  
@@ -15,9 +15,42 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 ---
 
-## v1.1.0 - Platform Expansion & Formal Methods (Q1 2026)
+## Completed in v2.0.0
 
-**Focus**: Complete cross-platform support, SPARK verification, and performance monitoring
+The following roadmap items have been completed in v2.0.0:
+
+### Windows Platform Support ✓
+**Status**: Completed in v2.0.0
+
+- Win32 API bindings (`GetDynamicTimeZoneInformation`)
+- CLDR Windows-to-IANA timezone mapping (~50 common zones)
+- Platform abstraction following POSIX pattern
+- Windows CI workflow (GitHub Actions)
+- Full documentation updated
+
+### SPARK Formal Verification ✓
+**Status**: Completed in v2.0.0
+
+- Domain layer formally verified using SPARK Ada
+- Application layer formally verified (operations, inbound/outbound ports)
+- 1350 checks: 1155 proved, 195 unproved (in generic instantiations)
+- `make spark-check` and `make spark-prove` targets
+- Pre/postconditions proven correct
+- No runtime errors (overflow, range, division by zero)
+
+### Bounded Containers ✓
+**Status**: Completed in v2.0.0
+
+- Implemented `Bounded_Vector` generic container
+- Stack-based storage (no heap allocation)
+- SPARK-compatible design
+- Used throughout domain layer
+
+---
+
+## v2.1.0 - Testing & Quality Enhancements (Q1 2026)
+
+**Focus**: Enhanced test coverage, performance validation, and CI improvements
 
 ### High Priority
 
@@ -33,32 +66,9 @@ This roadmap outlines planned enhancements and features for future TZif library 
 - Test across multiple platforms (Linux, macOS, Windows)
 - Update CI documentation
 
-**Rationale**: Continuous integration is critical for maintaining code quality and catching regressions. Current CI has known issues that prevent it from validating pull requests and releases properly.
+**Rationale**: Continuous integration is critical for maintaining code quality and catching regressions.
 
-#### 2. Complete Windows Platform Support
-**Status**: Implemented, needs validation
-**Effort**: Low (testing only)
-**Impact**: High
-
-**Completed**:
-- Win32 API bindings (`GetDynamicTimeZoneInformation`)
-- CLDR Windows-to-IANA timezone mapping (~50 common zones)
-- Platform abstraction following POSIX pattern
-- SRS/SDS documentation updated
-
-**Remaining**:
-- Test on Windows 10/Server 2022+ environment
-- Verify timezone detection with various Windows timezones
-- Add Windows-specific CI testing
-- Test user-provided tzdata path resolution
-
-**Requirements**:
-- Windows 10 or Windows Server 2022+ (for ICU/IANA support)
-- User must download IANA tzdata and provide path
-
-**Rationale**: Windows platform code is implemented and follows the same pattern as POSIX. Needs validation on actual Windows systems.
-
-#### 3. Add Cache Hit/Miss Statistics
+#### 2. Add Cache Hit/Miss Statistics
 **Status**: Proposed
 **Effort**: Low
 **Impact**: Medium
@@ -69,35 +79,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 - Expose statistics via query interface
 - Document performance monitoring best practices
 
-**Rationale**: Production deployments need visibility into cache performance for tuning and monitoring. Helps users optimize cache size and usage patterns.
-
-#### 4. SPARK Formal Verification
-**Status**: Proposed
-**Effort**: High
-**Impact**: High (Safety-Critical Applications)
-
-- Run GNATprove on domain and application layers
-- Add SPARK contracts and proof annotations
-- Verify absence of runtime errors
-- Document proof obligations and coverage
-- Achieve Silver or Gold level SPARK compliance
-- Publish formal verification results
-
-**Rationale**: TZif v1.0.0 is designed to support SPARK verification with pure domain logic, bounded types, and I/O isolation via generic plugins. Formal verification would enable adoption in safety-critical systems (avionics, medical devices, industrial control).
-
-#### 5. Heap-Free Embedded Support
-**Status**: Proposed
-**Effort**: High
-**Impact**: Medium (Embedded Systems)
-
-- Replace Ada.Containers.Vectors with bounded containers
-- Implement Ada.Containers.Bounded_Vectors for transitions/types
-- Verify No_Implicit_Heap_Allocations compliance
-- Test with embedded restriction pragmas
-- Validate on STM32 targets
-- Document memory footprint and limitations
-
-**Rationale**: TZif v1.0.0 provides embedded profile templates, but domain layer currently uses heap-allocating containers. Bounded containers would enable true heap-free operation for safety-critical embedded systems requiring static memory allocation.
+**Rationale**: Production deployments need visibility into cache performance for tuning and monitoring.
 
 ### Medium Priority
 
@@ -129,13 +111,9 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 ---
 
-## v1.2.0 - Testing & Quality Enhancements (Q2 2026)
+### Medium Priority
 
-**Focus**: Enhanced test coverage and performance validation
-
-### High Priority
-
-#### 8. Test Coverage Expansion
+#### 3. Test Coverage Expansion
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: High
@@ -148,7 +126,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Code review identified areas where additional test coverage would improve confidence in error handling and edge cases.
 
-#### 9. Exception Handler Audit
+#### 4. Exception Handler Audit
 **Status**: Proposed
 **Effort**: Low
 **Impact**: Medium
@@ -161,9 +139,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Silent exception handlers in directory scanning are intentional but should be periodically reviewed to ensure they remain appropriate as the codebase evolves.
 
-### Medium Priority
-
-#### 10. Property-Based Testing for Parser
+#### 5. Property-Based Testing for Parser
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Medium
@@ -176,7 +152,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Property-based testing excels at finding edge cases in parsers. Would significantly increase confidence in TZif parser correctness across all possible inputs.
 
-#### 11. Performance Benchmark Suite
+#### 6. Performance Benchmark Suite
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Medium
@@ -192,13 +168,13 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 ---
 
-## v2.0.0 - API Evolution & Advanced Features (Q3 2026)
+## v3.0.0 - API Evolution & Advanced Features (Q2 2026)
 
 **Focus**: Backward-compatible API enhancements and advanced timezone features
 
 ### Low Priority
 
-#### 12. Port Versioning Strategy
+#### 7. Port Versioning Strategy
 **Status**: Planning
 **Effort**: Medium
 **Impact**: Low (Future-proofing)
@@ -211,7 +187,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Establishes clear path for API evolution without breaking existing users. Important for long-term library stability.
 
-#### 13. Error Context Enrichment
+#### 8. Error Context Enrichment
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Low
@@ -224,7 +200,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Enhanced error diagnostics would aid production debugging. Useful for troubleshooting complex error scenarios.
 
-#### 14. Advanced Timezone Queries
+#### 9. Advanced Timezone Queries
 **Status**: Proposed
 **Effort**: High
 **Impact**: Low
@@ -237,7 +213,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Advanced queries would support more sophisticated timezone applications. Nice-to-have features for specialized use cases.
 
-#### 15. Controlled Types for Resource Management
+#### 10. Controlled Types for Resource Management
 **Status**: Consideration
 **Effort**: Low
 **Impact**: Low
@@ -249,7 +225,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Current design doesn't need cleanup actions, but future enhancements might benefit from controlled types.
 
-#### 16. Cache Persistence Investigation
+#### 11. Cache Persistence Investigation
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Low
@@ -262,7 +238,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Current in-memory cache performs excellently (20ms cold start). Persisted cache adds SPARK/I/O complexity. Implementation deferred pending user demand and performance requirements.
 
-#### 17. Parallel Source Discovery Investigation
+#### 12. Parallel Source Discovery Investigation
 **Status**: Proposed
 **Effort**: Medium
 **Impact**: Low
@@ -275,7 +251,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 **Rationale**: Current sequential discovery is sufficient (5-15ms for typical sources). Parallel implementation adds concurrency complexity. Deferred pending user demand for faster discovery.
 
-#### 18. Improved Infinite Loop Detection
+#### 13. Improved Infinite Loop Detection
 **Status**: Proposed
 **Effort**: Low
 **Impact**: Low
@@ -290,7 +266,7 @@ This roadmap outlines planned enhancements and features for future TZif library 
 
 ---
 
-## Future Considerations (Beyond v2.0.0)
+## Future Considerations (Beyond v3.0.0)
 
 ### Research & Exploration
 
@@ -330,12 +306,12 @@ Community feedback shapes TZif's development. If you have suggestions for the ro
 
 | Version | Release Date | Focus Area |
 |---------|-------------|------------|
-| v1.0.0  | Nov 2025    | Initial release (Linux, macOS, BSD) |
-| v1.1.0  | Q1 2026     | Windows support + performance monitoring |
-| v1.2.0  | Q2 2026     | Enhanced testing and benchmarks |
-| v2.0.0  | Q3 2026     | API evolution and advanced features |
+| v1.0.0  | Dec 2025    | Initial release (Linux, macOS, BSD) |
+| v2.0.0  | Dec 2025    | SPARK verification, Windows support, functional ^3.0.0 |
+| v2.1.0  | Q1 2026     | Testing & quality enhancements |
+| v3.0.0  | Q2 2026     | API evolution and advanced features |
 
 ---
 
-**Last Updated**: November 29, 2025
-**Next Review**: January 2026
+**Last Updated**: December 07, 2025
+**Next Review**: February 2026

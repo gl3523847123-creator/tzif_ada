@@ -1,6 +1,6 @@
 # Embedded Platform Guide
 
-**Version:** 1.0.0<br>
+**Version:** 2.0.0<br>
 **Date:** December 07, 2025<br>
 **SPDX-License-Identifier:** BSD-3-Clause<br>
 **License File:** See the LICENSE file in the project root<br>

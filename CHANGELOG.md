@@ -1,11 +1,11 @@
 # Changelog
 
-**Version:** 1.0.0  
-**Date:** December 02, 2025  
+**Version:** 2.0.0
+**Date:** December 07, 2025
 **SPDX-License-Identifier:** BSD-3-Clause<br>
 **License File:** See the LICENSE file in the project root<br>
-**Copyright:** © 2025 Michael Gardner, A Bit of Help, Inc.<br>  
-**Status:** Released  
+**Copyright:** © 2025 Michael Gardner, A Bit of Help, Inc.<br>
+**Status:** Released
 
 All notable changes to this project will be documented in this file.
 
@@ -13,6 +13,74 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.0.0] - 2025-12-07
+
+### Breaking Changes
+
+- **Dependency**: `functional` upgraded from ^2.2.1 to ^3.0.0
+  - Result discriminant changed from `Kind : Kind_Type` to `Is_Ok : Boolean`
+  - Option discriminant changed from `Kind : Kind_Type` to `Has_Value : Boolean`
+  - Constructor `Err(e)` renamed to `New_Error(e)`
+  - Predicate `Is_Err(r)` renamed to `Is_Error(r)`
+  - Transform `Map_Err(r)` renamed to `Map_Error(r)`
+  - Field `Err_Value` renamed to `Error_Value`
+
+### Added
+
+#### SPARK Formal Verification
+- Domain layer formally verified using SPARK Ada (gnatprove --mode=prove --level=2)
+- Application layer formally verified (operations, inbound ports, outbound ports)
+- 1350 checks: 1155 proved, 195 unproved (in generic instantiations)
+- Mathematical guarantees: no runtime errors, no uninitialized data, contract compliance
+- `make spark-check` for legality verification
+- `make spark-prove` for full proof verification
+
+#### Platform Support
+- Full Windows support with Desktop I/O adapter
+- Windows CI workflow (GitHub Actions)
+- Embedded platform stub adapter for custom implementations
+- Generic Repository pattern for cross-platform portability
+
+#### Examples
+- 11 complete example programs demonstrating all API operations
+- `find_by_id` - Find timezone by exact ID
+- `find_by_pattern` - Search zones by substring
+- `find_by_region` - Search zones by geographic region
+- `find_by_regex` - Search zones using regular expressions
+- `find_my_id` - Detect system's local timezone
+- `get_transition_at_epoch` - Query offset at specific time
+- `get_version` - Retrieve IANA database version
+- `list_all_zones` - Enumerate all available timezones
+- `discover_sources` - Find timezone data directories
+- `load_source` - Load a specific timezone data source
+- `validate_source` - Validate timezone data integrity
+
+#### Testing
+- Expanded test coverage: 567 tests (425 unit + 131 integration + 11 examples)
+- Result combinator tests with proper generic instantiation
+- Bounded_Vector comprehensive tests
+
+### Changed
+
+- Internal refactoring to use Option types instead of sentinel values
+- Boolean discriminants for Result/Option/Either types (SPARK-friendly)
+- Examples updated to use non-prefixed Bounded_Vector API calls
+- Documentation regenerated with SPARK verification details
+
+### Fixed
+
+- test_result_combinators.adb: And_Then generic instantiation (was using access parameter)
+- discover_sources.adb: Bounded_Vector API usage (non-tagged type)
+- list_all_zones.adb: Bounded_Vector API usage (non-tagged type)
+- Style fixes: reserved words case, line length compliance
+
+### Dependencies
+
+- `functional` ^3.0.0 (Result/Option/Either/Try monads) - **BREAKING**
+- `gnatcoll` ^25.0.0 (GNAT Components Collection)
+
+---
 
 ## [1.0.0] - 2025-12-02
 

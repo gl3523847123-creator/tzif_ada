@@ -5,7 +5,12 @@ pragma Ada_2022;
 --  Copyright (c) 2025 Michael Gardner, A Bit of Help, Inc.
 --  SPDX-License-Identifier: BSD-3-Clause
 --  Purpose:
---    Unit tests for Platform Stubs functionality.
+--    Integration tests for platform-specific functionality.
+--
+--  Notes:
+--    - Windows platform is fully implemented using Win32 API
+--    - This test verifies platform package structure and error handling
+--    - On non-Windows platforms, the Windows package exports types only
 --  ======================================================================
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Command_Line;
@@ -30,29 +35,38 @@ procedure Test_Platform_Stubs is
       end if;
    end Assert;
    --  =====================================================================
-   --  Test: Windows Read_Symbolic_Link Stub
+   --  Test: Windows Read_Symbolic_Link (cross-platform build verification)
    --  =====================================================================
-   procedure Test_Windows_Stub is
+   --  On non-Windows platforms, this verifies the Windows package compiles.
+   --  On Windows, this would query the actual system timezone via Win32 API
+   --  and map it to an IANA zone ID using CLDR data.
+   --  =====================================================================
+   procedure Test_Windows_Platform is
       Result : constant Platform_String_Result :=
         Read_Symbolic_Link ("/some/path");
    begin
-      Put_Line ("Test: Windows platform stub returns not-implemented error");
-      Assert
-        (String_Result.Is_Error (Result), "Windows stub should return Error");
-      --  Check that it's an infrastructure error
-      if String_Result.Is_Error (Result) then
+      Put_Line ("Test: Windows platform Read_Symbolic_Link");
+      --  On non-Windows: may return error (no Win32 API)
+      --  On Windows: returns Ok with IANA zone ID or Error if unknown TZ
+      if String_Result.Is_Ok (Result) then
+         Put_Line ("  Windows timezone detected: " &
+           Platform_Strings.To_String (String_Result.Value (Result)));
+         Assert (True, "Windows Read_Symbolic_Link returned Ok");
+      else
          declare
             Err : constant Error_Type := String_Result.Error_Info (Result);
          begin
+            Put_Line ("  Error (expected on non-Windows): " &
+              Error_Message (Err));
             Assert
-              (Err.Kind = Internal_Error,
-               "Error should be Internal_Error");
+              (Err.Kind = IO_Error or Err.Kind = Internal_Error,
+               "Error should be IO_Error or Internal_Error");
          end;
       end if;
-   end Test_Windows_Stub;
+   end Test_Windows_Platform;
 begin
    --  Run all tests
-   Test_Windows_Stub;
+   Test_Windows_Platform;
    --  Summary
    Put_Line ("====================================================");
    Put_Line

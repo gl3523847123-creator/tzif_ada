@@ -20,26 +20,23 @@ is
    --  ========================================================================
    --  Read_Symbolic_Link
    --  ========================================================================
-   --  Read symbolic link or determine timezone via Windows registry.
+   --  Query system timezone and return IANA zone ID.
+   --
+   --  On Windows, this uses GetDynamicTimeZoneInformation Win32 API to get
+   --  the Windows timezone key name, then maps it to an IANA zone ID using
+   --  CLDR data (Unicode Common Locale Data Repository).
    --
    --  Parameters:
-   --    Path: Path to check (typically ignored on Windows, uses registry
-   --          instead)
+   --    Path: Ignored on Windows (provided for API compatibility)
    --
    --  Returns:
-   --    Error: "Not implemented on Windows" (for now)
-   --
-   --  Future Implementation:
-   --    Should query Windows registry at:
-   --    HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\
-   --    TimeZoneInformation and map Windows timezone name to IANA zone ID.
+   --    Ok: IANA zone ID string (e.g., "America/New_York")
+   --    Error: If timezone cannot be determined or unknown Windows timezone
    --
    --  Notes:
-   --    - Windows uses different timezone model than POSIX
-   --    - Windows timezone names != IANA zone IDs (need mapping table)
-   --    - Windows 10+ includes ICU with IANA data
-   --    - Symbolic links on Windows require Developer Mode or admin
-   --      rights
+   --    - Windows timezone names != IANA zone IDs (uses CLDR mapping table)
+   --    - Supports ~50 common Windows timezone mappings
+   --    - Unknown timezones return Error with descriptive message
    --  ========================================================================
 
    function Read_Symbolic_Link (Path : String) return Platform_String_Result;
