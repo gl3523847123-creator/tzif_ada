@@ -33,7 +33,7 @@ alr with tzif
 
 # Or get TZif standalone
 alr get tzif
-cd tzif_1.0.0_*
+cd tzif_2.0.0_*
 alr build
 ```
 
